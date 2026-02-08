@@ -16,30 +16,11 @@ build:
     - texlive-latex-extra
     - latexmk
     - fonts-dejavu
-  jobs:
-    post_install:
-      - pip install sphinx-intl
-    pre_build:
-      - cd docs && make gettext
-      - cd docs && sphinx-intl update -p build/gettext -l sr
-
-# Build documentation in the docs/ directory with Sphinx
-sphinx:
-  configuration: docs/source/conf.py
-  fail_on_warning: false
-
-# Localization
-locales:
-  - en
-  - sr
-
-# Optionally build your docs in additional formats such as PDF and ePub
-formats:
-  - pdf
-  - epub
-  - htmlzip
-
-# Install Python dependencies
-python:
-  install:
-    - requirements: docs/requirements.txt
+  commands:
+    # Install dependencies
+    - pip install -r docs/requirements.txt
+    - pip install sphinx-intl
+    # Build English version
+    - sphinx-build -b html docs/source $READTHEDOCS_OUTPUT/html/en
+    # Build Serbian version
+    - sphinx-build -b html -D language=sr docs/source $READTHEDOCS_OUTPUT/html/sr
