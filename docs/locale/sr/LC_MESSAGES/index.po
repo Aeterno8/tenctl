@@ -1,0 +1,350 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-01 12:00+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language: sr\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/index.rst:116
+msgid "Documentation"
+msgstr "Документација"
+
+#: ../../source/index.rst:4
+msgid "Tenctl - Multi-Tenant Management for Proxmox VE"
+msgstr "Tenctl - Управљање више-клијент окружењима за Proxmox VE"
+
+#: ../../source/index.rst:6
+msgid "**Version:** 1.0.2"
+msgstr "**Верзија:** 1.0.2"
+
+#: ../../source/index.rst:8
+msgid ""
+"A pure Bash CLI tool for managing multi-tenant environments on Proxmox VE"
+" clusters. This system provides complete tenant isolation through "
+"resource pools, VLANs, user groups, and VyOS integration."
+msgstr ""
+"Алат написан искључиво у Bash-у за управљање више-клијентским "
+"окружењима на Proxmox VE кластерима. Систем обезбеђује потпуну изолацију "
+"клијента кроз resource pools, VLAN-ове, корисничке групе и "
+"VyOS интеграцију."
+
+#: ../../source/index.rst:13
+msgid "🚀 Getting Started"
+msgstr "🚀 Почетак рада"
+
+#: ../../source/index.rst:17
+msgid "Installation, quickstart guide, and basic concepts for new users."
+msgstr "Инсталација, брзи водич и основни концепти за нове кориснике."
+
+#: ../../source/index.rst:19
+msgid "📘 User Guide"
+msgstr "📘 Кориснички водич"
+
+#: ../../source/index.rst:23
+msgid "Complete guide to tenant lifecycle, networking, and resource management."
+msgstr ""
+"Комплетан водич за животни циклус клијента (tenant-а), умрежавање и "
+"управљање ресурсима."
+
+#: ../../source/index.rst:25
+msgid "🔧 Admin Guide"
+msgstr "🔧 Администраторски водич"
+
+#: ../../source/index.rst:29
+msgid "Cluster setup, configuration reference, security, and troubleshooting."
+msgstr ""
+"Подешавање кластера, референца конфигурације, безбедност и решавање "
+"проблема."
+
+#: ../../source/index.rst:31
+msgid "📚 Reference"
+msgstr "📚 Референца"
+
+#: ../../source/index.rst:35
+msgid "CLI command reference and error codes."
+msgstr "CLI команде, функције модула, конфигурација и кодови грешака."
+
+#: ../../source/index.rst:38
+msgid "Key Features"
+msgstr "Кључне карактеристике"
+
+#: ../../source/index.rst:40
+msgid ""
+"**Complete Tenant Isolation**: Resource pools, VLANs, user groups, and "
+"permissions"
+msgstr ""
+"**Потпуна изолација клијента (tenant-а)**: Resource pools, VLAN-ови, "
+"корисничке групе и дозволе"
+
+#: ../../source/index.rst:41
+msgid ""
+"**Network Integration**: Automatic VLAN allocation with VyOS router "
+"support"
+msgstr ""
+"**Мрежна интеграција**: Аутоматска алокација VLAN-ова са подршком за VyOS"
+" рутер"
+
+#: ../../source/index.rst:42
+msgid ""
+"**Resource Management**: CPU, RAM, and storage monitoring via systemd "
+"service"
+msgstr ""
+"**Управљање ресурсима**: Праћење CPU, RAM и storage-а преко systemd "
+"сервиса"
+
+#: ../../source/index.rst:43
+msgid "**Cluster-Aware**: Multi-node synchronization via pmxcfs"
+msgstr "**Подршка за кластер**: Синхронизација више чворова преко pmxcfsа"
+
+#: ../../source/index.rst:44
+msgid "**Modular Design**: Git-style architecture with 18 library modules"
+msgstr "**Модуларни дизајн**: Git-стил архитектура са 18 библиотечких модула"
+
+#: ../../source/index.rst:45
+msgid "**Pure Bash**: No external dependencies beyond Proxmox VE APIs"
+msgstr "**Искључиво Bash**: Без спољних зависности осим Proxmox VE API-ја"
+
+#: ../../source/index.rst:46
+msgid "**Audit Trail**: Complete tenant lifecycle logging"
+msgstr ""
+"**Ревизиони траг**: Комплетно логовање животног циклуса клијента "
+"(tenant-а)"
+
+#: ../../source/index.rst:49
+msgid "Quick Start"
+msgstr "Брзи почетак"
+
+#: ../../source/index.rst:51
+msgid "Install using the bootstrap script:"
+msgstr "Инсталација користећи bootstrap скрипту:"
+
+#: ../../source/index.rst:57
+msgid "Create your first tenant:"
+msgstr "Креирате свог првог клијента (tenant):"
+
+#: ../../source/index.rst:63
+msgid "See the :doc:`getting-started/index` guide for detailed walkthrough."
+msgstr "Погледајте :doc:`getting-started/quickstart` водич за детаљан опис."
+
+#: ../../source/index.rst:66
+msgid "CLI Commands"
+msgstr "CLI команде"
+
+#: ../../source/index.rst:68
+msgid "The system provides 14 commands for tenant management:"
+msgstr "Систем обезбеђује 14 команди за управљање клијентима (tenant-има):"
+
+#: ../../source/index.rst:74
+msgid "Command"
+msgstr "Команда"
+
+#: ../../source/index.rst:75
+msgid "Description"
+msgstr "Опис"
+
+#: ../../source/index.rst:76
+msgid "``tenctl``"
+msgstr ""
+
+#: ../../source/index.rst:77
+msgid "Main entry point and help system"
+msgstr "Главна улазна тачка и систем помоћи"
+
+#: ../../source/index.rst:78
+msgid "``tenctl-init``"
+msgstr "``tenctl-init``"
+
+#: ../../source/index.rst:79
+msgid "Initialize the system configuration"
+msgstr "Иницијализација конфигурације система"
+
+#: ../../source/index.rst:80
+msgid "``tenctl-add``"
+msgstr "``tenctl-add``"
+
+#: ../../source/index.rst:81
+msgid "Create a new tenant"
+msgstr "Креирање новог клијента (tenant)"
+
+#: ../../source/index.rst:82
+msgid "``tenctl-modify``"
+msgstr "``tenctl-modify``"
+
+#: ../../source/index.rst:83
+msgid "Modify tenant configuration"
+msgstr "Измена конфигурације клијента (tenant)"
+
+#: ../../source/index.rst:84
+msgid "``tenctl-suspend``"
+msgstr "``tenctl-suspend``"
+
+#: ../../source/index.rst:85
+msgid "Suspend a tenant (pause VMs, revoke permissions)"
+msgstr "Суспендовање клијента (tenant) (паузирање VM-ова, одузимање дозвола)"
+
+#: ../../source/index.rst:86
+msgid "``tenctl-resume``"
+msgstr "``tenctl-resume``"
+
+#: ../../source/index.rst:87
+msgid "Resume a suspended tenant"
+msgstr "Настављање рада суспендованог клијента (tenant)"
+
+#: ../../source/index.rst:88
+msgid "``tenctl-remove``"
+msgstr "``tenctl-remove``"
+
+#: ../../source/index.rst:89
+msgid "Remove a tenant completely"
+msgstr "Комплетно уклањање клијента (tenant)"
+
+#: ../../source/index.rst:90
+msgid "``tenctl-list``"
+msgstr "``tenctl-list``"
+
+#: ../../source/index.rst:91
+msgid "List all tenants"
+msgstr "Листа свих клијената (tenant-а)"
+
+#: ../../source/index.rst:92
+msgid "``tenctl-health``"
+msgstr "``tenctl-health``"
+
+#: ../../source/index.rst:93
+msgid "Check tenant health status"
+msgstr "Провера стања клијента (tenant-а)"
+
+#: ../../source/index.rst:94
+msgid "``tenctl-usage``"
+msgstr "``tenctl-usage``"
+
+#: ../../source/index.rst:95
+msgid "Display resource usage statistics"
+msgstr "Приказ статистике коришћења ресурса"
+
+#: ../../source/index.rst:96
+msgid "``tenctl-audit``"
+msgstr "``tenctl-audit``"
+
+#: ../../source/index.rst:97
+msgid "Show audit log for tenants"
+msgstr "Приказ ревизионог лога за клијенте (tenant)"
+
+#: ../../source/index.rst:98
+msgid "``tenctl-backup``"
+msgstr "``tenctl-backup``"
+
+#: ../../source/index.rst:99
+msgid "Backup tenant configuration"
+msgstr "Резервна копија конфигурације клијента (tenant)"
+
+#: ../../source/index.rst:100
+msgid "``tenctl-restore``"
+msgstr "``tenctl-restore``"
+
+#: ../../source/index.rst:101
+msgid "Restore tenant from backup"
+msgstr "Враћање клијента (tenant) из резервне копије"
+
+#: ../../source/index.rst:102
+msgid "``tenctl-vyos``"
+msgstr "``tenctl-vyos``"
+
+#: ../../source/index.rst:103
+msgid "Configure VyOS router integration"
+msgstr "Конфигурација VyOS рутер интеграције"
+
+#: ../../source/index.rst:106
+msgid "System Requirements"
+msgstr "Системски захтеви"
+
+#: ../../source/index.rst:108
+msgid "Proxmox VE 9.0 or later"
+msgstr "Proxmox VE 9.0 или новији"
+
+#: ../../source/index.rst:109
+msgid "Bash 4.0+"
+msgstr "Bash 4.0+"
+
+#: ../../source/index.rst:110
+msgid "Root access on Proxmox nodes"
+msgstr "Root приступ на Proxmox чворовима"
+
+#: ../../source/index.rst:111
+msgid "VyOS router (optional, for network isolation)"
+msgstr "VyOS рутер (опционо, за мрежну изолацију)"
+
+#: ../../source/index.rst:114
+msgid "Table of Contents"
+msgstr "Садржај"
+
+#: ../../source/index.rst:127
+msgid "Indices and Tables"
+msgstr "Индекси и табеле"
+
+#: ../../source/index.rst:129
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+#: ../../source/index.rst:130
+msgid ":ref:`search`"
+msgstr ":ref:`search`"
+
+#: ../../source/index.rst:133
+msgid "License"
+msgstr "Лиценца"
+
+#: ../../source/index.rst:135
+msgid ""
+"This project is licensed under the MIT License. See "
+":doc:`appendix/license` for full license text."
+msgstr ""
+"Овај пројекат је лиценциран под MIT лиценцом. Погледајте "
+":doc:`appendix/license` за детаље."
+
+#: ../../source/index.rst:138
+msgid "Author"
+msgstr "Аутор"
+
+#: ../../source/index.rst:140
+msgid "**Aleksa Savić**"
+msgstr "**Алекса Савић**"
+
+#: ../../source/index.rst:142
+msgid "Project Repository: http://192.168.1.201:3000/Aleksa/tenctl"
+msgstr "Пројектни репозиторијум: http://192.168.1.201:3000/Aleksa/tenctl"
+
+#: ../../source/index.rst:143
+msgid "Documentation: Built with Sphinx and ReadTheDocs"
+msgstr "Документација: Креирана са Sphinx и ReadTheDocs"
+
+#~ msgid "💻 Developer Guide"
+#~ msgstr "💻 Водич за програмере"
+
+#~ msgid "Architecture deep dive, module system, and extending the tool."
+#~ msgstr "Детаљна анализа архитектуре, модуларни систем и проширење алата."
+
+#~ msgid "🏗️ Architecture"
+#~ msgstr "🏗️ Архитектура"
+
+#~ msgid "Technical architecture, isolation model, and network design."
+#~ msgstr "Техничка архитектура, модел изолације и дизајн мреже."
+
+#~ msgid ":doc:`appendix/glossary`"
+#~ msgstr ":doc:`appendix/glossary`"
+

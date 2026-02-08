@@ -1,0 +1,260 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+if [ -f "/usr/local/share/tenctl/lib/ptm-loader.sh" ]; then
+    LIB_DIR="/usr/local/share/tenctl/lib"
+    CONFIG_FILE="/usr/local/share/tenctl/config/tenant.conf"
+elif [ -f "${SCRIPT_DIR}/lib/ptm-loader.sh" ]; then
+    LIB_DIR="${SCRIPT_DIR}/lib"
+    CONFIG_FILE="${LIB_DIR}/../config/tenant.conf"
+else
+    echo "ERROR: Cannot find ptm-loader.sh" >&2
+    exit 1
+fi
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "ERROR: Config file not found: $CONFIG_FILE" >&2
+    exit 1
+fi
+source "$CONFIG_FILE"
+
+source "${LIB_DIR}/ptm-loader.sh"
+
+ptm_load_tenant_management
+
+
+usage() {
+    cat << EOF
+Usage: $0 -n TENANT_NAME [OPTIONS]
+
+Display resource usage for a tenant and compare with configured limits.
+
+Required:
+  -n, --name TENANT_NAME      Name of the tenant
+
+Optional:
+  --json                      Output in JSON format
+  -v, --verbose               Show detailed VM information
+  -h, --help                  Show this help
+
+Examples:
+  $0 -n firma_a
+  $0 -n firma_a --json
+  $0 -n firma_a --verbose
+
+EOF
+    exit 1
+}
+
+if [ $# -gt 0 ] && [ "$1" = "help" ]; then
+    usage
+fi
+
+TENANT_NAME=""
+JSON_OUTPUT=false
+VERBOSE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -n|--name)
+            TENANT_NAME="$2"
+            shift 2
+            ;;
+        --json)
+            JSON_OUTPUT=true
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+if [ -z "$TENANT_NAME" ]; then
+    echo "ERROR: Tenant name is required"
+    usage
+fi
+
+ptm_check_root
+ptm_check_requirements || exit 1
+
+ptm_validate_tenant_name "$TENANT_NAME" || exit 1
+
+if ! ptm_tenant_exists "$TENANT_NAME"; then
+    ptm_log ERROR "Tenant '$TENANT_NAME' does not exist"
+    exit 1
+fi
+
+if ! ptm_load_tenant_config "$TENANT_NAME"; then
+    ptm_log ERROR "Failed to load tenant configuration"
+    exit 1
+fi
+
+POOL_ID="tenant_${TENANT_NAME}"
+
+CURRENT_CPU=0
+CURRENT_RAM=0
+CURRENT_STORAGE=0
+VM_COUNT=0
+RUNNING_COUNT=0
+
+declare -a VM_DETAILS
+
+VM_LIST=$(ptm_get_pool_vm_list "$POOL_ID")
+
+if [ -n "$VM_LIST" ]; then
+    for vmid in $VM_LIST; do
+        VM_DATA=$(ptm_get_vm_metadata "$vmid")
+
+        if [ "$VM_DATA" = "{}" ]; then
+            continue
+        fi
+
+        VM_COUNT=$((VM_COUNT + 1))
+
+        ptm_parse_vm_metadata "$VM_DATA"
+
+        CPU_USAGE=$(echo "$VM_DATA" | jq -r '.cpu // 0')
+        CPU_USAGE_PERCENT=$(echo "$CPU_USAGE * 100" | bc -l 2>/dev/null | cut -d. -f1 || echo "0")
+
+        MEM_USAGE_BYTES=$(echo "$VM_DATA" | jq -r '.mem // 0')
+        MEM_USAGE_MB=$((MEM_USAGE_BYTES / 1024 / 1024))
+        if [ "$VM_MEM_MB" -gt 0 ]; then
+            MEM_USAGE_PERCENT=$((MEM_USAGE_MB * 100 / VM_MEM_MB))
+        else
+            MEM_USAGE_PERCENT=0
+        fi
+
+        CURRENT_CPU=$((CURRENT_CPU + VM_CORES))
+        CURRENT_RAM=$((CURRENT_RAM + VM_MEM_MB))
+        CURRENT_STORAGE=$((CURRENT_STORAGE + VM_DISK_GB))
+
+        if [ "$VM_STATUS" = "running" ]; then
+            RUNNING_COUNT=$((RUNNING_COUNT + 1))
+        fi
+
+        VM_DETAILS+=("$vmid|$VM_NAME|$VM_TYPE|$VM_STATUS|$VM_NODE|$VM_CORES|$VM_MEM_MB|$VM_DISK_GB|$CPU_USAGE_PERCENT|$MEM_USAGE_PERCENT")
+    done
+fi
+
+if [ "$CPU_LIMIT" -gt 0 ]; then
+    CPU_PERCENT=$((CURRENT_CPU * 100 / CPU_LIMIT))
+else
+    CPU_PERCENT=0
+fi
+
+if [ "$RAM_LIMIT" -gt 0 ]; then
+    RAM_PERCENT=$((CURRENT_RAM * 100 / RAM_LIMIT))
+else
+    RAM_PERCENT=0
+fi
+
+if [ "$STORAGE_LIMIT" -gt 0 ]; then
+    STORAGE_PERCENT=$((CURRENT_STORAGE * 100 / STORAGE_LIMIT))
+else
+    STORAGE_PERCENT=0
+fi
+
+CPU_STATUS="OK"
+RAM_STATUS="OK"
+STORAGE_STATUS="OK"
+
+[ "$CPU_PERCENT" -ge 90 ] && CPU_STATUS="CRITICAL"
+[ "$CPU_PERCENT" -ge 80 ] && [ "$CPU_PERCENT" -lt 90 ] && CPU_STATUS="WARNING"
+
+[ "$RAM_PERCENT" -ge 90 ] && RAM_STATUS="CRITICAL"
+[ "$RAM_PERCENT" -ge 80 ] && [ "$RAM_PERCENT" -lt 90 ] && RAM_STATUS="WARNING"
+
+[ "$STORAGE_PERCENT" -ge 90 ] && STORAGE_STATUS="CRITICAL"
+[ "$STORAGE_PERCENT" -ge 80 ] && [ "$STORAGE_PERCENT" -lt 90 ] && STORAGE_STATUS="WARNING"
+
+OVERALL_STATUS="OK"
+if [ "$CPU_STATUS" = "CRITICAL" ] || [ "$RAM_STATUS" = "CRITICAL" ] || [ "$STORAGE_STATUS" = "CRITICAL" ]; then
+    OVERALL_STATUS="CRITICAL"
+elif [ "$CPU_STATUS" = "WARNING" ] || [ "$RAM_STATUS" = "WARNING" ] || [ "$STORAGE_STATUS" = "WARNING" ]; then
+    OVERALL_STATUS="WARNING"
+fi
+
+if [ "$JSON_OUTPUT" = true ]; then
+    VM_JSON="["
+    for i in "${!VM_DETAILS[@]}"; do
+        IFS='|' read -r vmid name type status node cores mem disk cpu_pct mem_pct <<< "${VM_DETAILS[$i]}"
+        [ $i -gt 0 ] && VM_JSON+=","
+        VM_JSON+="{\"vmid\":$vmid,\"name\":\"$name\",\"type\":\"$type\",\"status\":\"$status\",\"node\":\"$node\",\"cores\":$cores,\"memory_mb\":$mem,\"disk_gb\":$disk,\"cpu_usage_percent\":$cpu_pct,\"memory_usage_percent\":$mem_pct}"
+    done
+    VM_JSON+="]"
+
+    cat <<EOF
+{
+  "tenant_name": "$TENANT_NAME",
+  "pool_id": "$POOL_ID",
+  "overall_status": "$OVERALL_STATUS",
+  "vm_count": $VM_COUNT,
+  "running_count": $RUNNING_COUNT,
+  "resources": {
+    "cpu": {
+      "allocated": $CURRENT_CPU,
+      "limit": $CPU_LIMIT,
+      "percent": $CPU_PERCENT,
+      "status": "$CPU_STATUS"
+    },
+    "ram": {
+      "allocated_mb": $CURRENT_RAM,
+      "limit_mb": $RAM_LIMIT,
+      "percent": $RAM_PERCENT,
+      "status": "$RAM_STATUS"
+    },
+    "storage": {
+      "used_gb": $CURRENT_STORAGE,
+      "limit_gb": $STORAGE_LIMIT,
+      "percent": $STORAGE_PERCENT,
+      "status": "$STORAGE_STATUS"
+    }
+  },
+  "vms": $VM_JSON
+}
+EOF
+else
+    ptm_log_console "Tenant Resource Usage Report"
+    ptm_log_console "Tenant: $TENANT_NAME"
+    ptm_log_console "Pool: $POOL_ID"
+    ptm_log_console "Overall Status: $OVERALL_STATUS"
+    ptm_log_console "VMs: $VM_COUNT total, $RUNNING_COUNT running"
+    ptm_log_console "Resource Allocation:"
+    ptm_log_console "  CPU:     ${CURRENT_CPU} / ${CPU_LIMIT} cores (${CPU_PERCENT}%) [$CPU_STATUS]"
+    ptm_log_console "  RAM:     ${CURRENT_RAM} / ${RAM_LIMIT} MB (${RAM_PERCENT}%) [$RAM_STATUS]"
+    ptm_log_console "  Storage: ${CURRENT_STORAGE} / ${STORAGE_LIMIT} GB (${STORAGE_PERCENT}%) [$STORAGE_STATUS]"
+
+    if [ "$OVERALL_STATUS" = "CRITICAL" ]; then
+        ptm_log_console "${RED}CRITICAL: One or more resources at ≥90% capacity!"
+    elif [ "$OVERALL_STATUS" = "WARNING" ]; then
+        ptm_log_console "${YELLOW}WARNING: One or more resources at ≥80% capacity"
+    fi
+
+    if [ "$VERBOSE" = true ]; then
+        ptm_log_console ""
+        ptm_log_console "VM Details"
+        printf "%-6s %-20s %-8s %-10s %-10s %6s %10s %8s\n" "VMID" "Name" "Type" "Status" "Node" "Cores" "RAM(MB)" "Disk(GB)"
+        printf "%-6s %-20s %-8s %-10s %-10s %6s %10s %8s\n" "------" "--------------------" "--------" "----------" "----------" "------" "----------" "--------"
+
+        for detail in "${VM_DETAILS[@]+"${VM_DETAILS[@]}"}"; do
+            [ -z "$detail" ] && continue  # Skip if empty (no VMs case)
+            IFS='|' read -r vmid name type status node cores mem disk cpu_pct mem_pct <<< "$detail"
+            printf "%-6s %-20s %-8s %-10s %-10s %6s %10s %8s\n" "$vmid" "$name" "$type" "$status" "$node" "$cores" "$mem" "$disk"
+        done
+    fi
+
+fi
+
+exit 0

@@ -1,0 +1,320 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $0 [COMMAND] [OPTIONS]
+
+VyOS Router Setup and Management
+
+Commands:
+  install         Create and start VyOS VM
+  configure       Generate initial VyOS configuration
+  test            Test VyOS connectivity
+  enable          Enable VyOS integration in tenant.conf
+  status          Show VyOS VM status
+
+Options:
+  --node NODE     Proxmox node (default: $VYOS_NODE)
+  --vmid VMID     VM ID (default: $VYOS_VMID)
+  --wan-ip IP     WAN IP address
+  --wan-gw IP     WAN gateway
+  -h, --help      Show this help
+
+Examples:
+  # Create VyOS VM on pve3
+  $0 install --node pve3 --vmid 900
+
+  # Generate configuration commands
+  $0 configure --wan-ip 192.168.1.100 --wan-gw 192.168.1.1
+
+  # Test connectivity
+  $0 test
+
+  # Enable VyOS integration
+  $0 enable
+
+EOF
+    exit "${1:-0}"
+}
+
+install_vyos_vm() {
+    local node="${1:-pve3}"
+    local vmid="${2:-900}"
+    
+    ptm_log INFO "Creating VyOS VM on node $node (VM ID: $vmid)..."
+    
+    if ssh "root@${node}.lan" "qm status $vmid" &>/dev/null; then
+        ptm_log ERROR "VM $vmid already exists on node $node"
+        return 1
+    fi
+    
+    local storage
+    storage=$(ssh "root@${node}.lan" "pvesm status | grep -E 'lvmthin.*active' | head -1 | awk '{print \$1}'")
+    
+    if [ -z "$storage" ]; then
+        storage="local-lvm"
+    fi
+    
+    ptm_log INFO "Using storage: $storage"
+    
+    ssh "root@${node}.lan" "qm create $vmid \
+        --name vyos-router \
+        --memory 2048 \
+        --cores 2 \
+        --net0 virtio,bridge=vmbr0 \
+        --net1 virtio,bridge=vmbr1 \
+        --scsihw virtio-scsi-pci \
+        --scsi0 ${storage}:10 \
+        --ide2 local:iso/vyos-2025.09.01-0023-rolling-generic-amd64.iso,media=cdrom \
+        --boot order=scsi0\;ide2 \
+        --ostype l26 \
+        --agent 1"
+    
+    ptm_log INFO "VyOS VM created successfully!"
+    ptm_log INFO ""
+    ptm_log INFO "Next steps:"
+    ptm_log INFO "1. Start the VM: ssh root@${node}.lan 'qm start $vmid'"
+    ptm_log INFO "2. Access console: ssh root@${node}.lan 'qm terminal $vmid'"
+    ptm_log INFO "3. Login with: vyos / vyos"
+    ptm_log INFO "4. Install VyOS to disk:"
+    ptm_log INFO "   $ install image"
+    ptm_log INFO "   Follow prompts, set password, reboot"
+    ptm_log INFO "5. After reboot, run: $0 configure --wan-ip <IP> --wan-gw <GATEWAY>"
+}
+
+generate_vyos_config() {
+    local wan_ip="${1}"
+    local wan_gw="${2}"
+    local wan_iface="${VYOS_WAN_INTERFACE:-eth0}"
+    local lan_iface="${VYOS_LAN_INTERFACE:-eth1}"
+    
+    if [ -z "$wan_ip" ] || [ -z "$wan_gw" ]; then
+        ptm_log ERROR "WAN IP and gateway are required"
+        ptm_log INFO "Usage: $0 configure --wan-ip <IP> --wan-gw <GATEWAY>"
+        return 1
+    fi
+    
+    ptm_log INFO "VyOS Initial Configuration Commands:"
+    ptm_log INFO "Copy and paste these commands into VyOS console:"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    cat << EOF
+configure
+
+# Basic system settings
+set system host-name vyos-router
+set system domain-name lan
+set system name-server 8.8.8.8
+set system name-server 8.8.4.4
+
+# WAN interface (external network)
+set interfaces ethernet ${wan_iface} address '${wan_ip}/24'
+set interfaces ethernet ${wan_iface} description 'WAN'
+
+# LAN interface (tenant networks trunk)
+set interfaces ethernet ${lan_iface} description 'Tenant Networks'
+
+# Default route
+set protocols static route 0.0.0.0/0 next-hop ${wan_gw}
+
+# SSH access
+set service ssh port 22
+
+# Base NAT for tenant networks
+set nat source rule 1 outbound-interface '${wan_iface}'
+set nat source rule 1 source address '${BASE_SUBNET}.0.0/16'
+set nat source rule 1 translation address masquerade
+
+# Commit and save
+commit
+save
+exit
+EOF
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    ptm_log INFO "After applying configuration, update config/tenant.conf:"
+    ptm_log INFO "  VYOS_ENABLED=true"
+    ptm_log INFO "  VYOS_NODE=\"${VYOS_NODE}\""
+    ptm_log INFO "  VYOS_VMID=\"${VYOS_VMID}\""
+    ptm_log INFO "  VYOS_IP=\"${wan_ip}\""
+    ptm_log INFO "  VYOS_WAN_IP=\"${wan_ip}\""
+    ptm_log INFO "  VYOS_WAN_GATEWAY=\"${wan_gw}\""
+    echo ""
+    ptm_log INFO "Or run: $0 enable --wan-ip ${wan_ip} --wan-gw ${wan_gw}"
+}
+
+enable_vyos_integration() {
+    local wan_ip="${1}"
+    local wan_gw="${2}"
+    local node="${3:-pve3}"
+    local vmid="${4:-900}"
+    
+    if [ -z "$wan_ip" ] || [ -z "$wan_gw" ]; then
+        ptm_log ERROR "WAN IP and gateway are required"
+        return 1
+    fi
+    
+    local config_file="${SCRIPT_DIR}/../config/tenant.conf"
+    
+    ptm_log INFO "Updating $config_file..."
+    
+    sed -i "s/^VYOS_ENABLED=.*/VYOS_ENABLED=true/" "$config_file"
+    sed -i "s/^VYOS_NODE=.*/VYOS_NODE=\"${node}\"/" "$config_file"
+    sed -i "s/^VYOS_VMID=.*/VYOS_VMID=\"${vmid}\"/" "$config_file"
+    sed -i "s|^VYOS_IP=.*|VYOS_IP=\"${wan_ip}\"|" "$config_file"
+    sed -i "s|^VYOS_WAN_IP=.*|VYOS_WAN_IP=\"${wan_ip}\"|" "$config_file"
+    sed -i "s|^VYOS_WAN_GATEWAY=.*|VYOS_WAN_GATEWAY=\"${wan_gw}\"|" "$config_file"
+    
+    ptm_log INFO "VyOS integration enabled!"
+    ptm_log INFO "Configuration updated in: $config_file"
+    ptm_log INFO ""
+    ptm_log INFO "Test connectivity with: $0 test"
+}
+
+test_vyos_connectivity() {
+    ptm_log INFO "Testing VyOS connectivity..."
+    
+    if ! ptm_check_vyos_configured 2>/dev/null; then
+        ptm_log ERROR "VyOS not configured in tenant.conf"
+        ptm_log INFO "Run: $0 enable --wan-ip <IP> --wan-gw <GATEWAY>"
+        return 1
+    fi
+    
+    local node="${VYOS_NODE}"
+    local vmid="${VYOS_VMID}"
+    
+    ptm_log INFO "Checking VM status on $node..."
+    if ! ssh "root@${node}.lan" "qm status $vmid | grep -q running"; then
+        ptm_log ERROR "VyOS VM is not running"
+        ptm_log INFO "Start it with: ssh root@${node}.lan 'qm start $vmid'"
+        return 1
+    fi
+    
+    ptm_log INFO "VM is running"
+    
+    ptm_log INFO "Testing SSH connectivity..."
+    if ptm_test_vyos_connection; then
+        ptm_log INFO "VyOS connectivity test PASSED!"
+        return 0
+    else
+        ptm_log ERROR "VyOS connectivity test FAILED"
+        ptm_log INFO "Check:"
+        ptm_log INFO "  1. VM is fully booted"
+        ptm_log INFO "  2. SSH is enabled on VyOS"
+        ptm_log INFO "  3. Network configuration is correct"
+        ptm_log INFO "  4. SSH keys are set up (run: ssh-copy-id vyos@<vyos-ip>)"
+        return 1
+    fi
+}
+
+show_vyos_status() {
+    if ! ptm_check_vyos_configured 2>/dev/null; then
+        ptm_log INFO "VyOS Status: Not configured"
+        ptm_log INFO "Run '$0 install' to create VyOS VM"
+        return 0
+    fi
+    
+    local node="${VYOS_NODE}"
+    local vmid="${VYOS_VMID}"
+    
+    ptm_log INFO "VyOS Configuration:"
+    ptm_log INFO "  Node: $node"
+    ptm_log INFO "  VM ID: $vmid"
+    ptm_log INFO "  Enabled: ${VYOS_ENABLED}"
+    
+    local status
+    status=$(ssh "root@${node}.lan" "qm status $vmid 2>/dev/null" || echo "unknown")
+    ptm_log INFO "  VM Status: $status"
+    
+    if [ "$status" = "status: running" ]; then
+        local ip
+        ip=$(ptm_get_vyos_ip "$node" "$vmid" 2>/dev/null || echo "unknown")
+        ptm_log INFO "  IP Address: $ip"
+        
+        if ptm_test_vyos_connection &>/dev/null; then
+            ptm_log INFO "  Connectivity: OK"
+        else
+            ptm_log WARN "  Connectivity: FAILED"
+        fi
+    fi
+}
+
+COMMAND="${1:-}"
+shift || true
+
+case "$COMMAND" in
+    install)
+        NODE="${VYOS_NODE:-pve3}"
+        VMID="${VYOS_VMID:-900}"
+        
+        while [[ $# -gt 0 ]]; do
+            case $1 in
+                --node) NODE="$2"; shift 2 ;;
+                --vmid) VMID="$2"; shift 2 ;;
+                -h|--help) usage 0 ;;
+                *) ptm_log ERROR "Unknown option: $1"; usage 1 ;;
+            esac
+        done
+        
+        install_vyos_vm "$NODE" "$VMID"
+        ;;
+        
+    configure)
+        WAN_IP=""
+        WAN_GW=""
+        
+        while [[ $# -gt 0 ]]; do
+            case $1 in
+                --wan-ip) WAN_IP="$2"; shift 2 ;;
+                --wan-gw) WAN_GW="$2"; shift 2 ;;
+                -h|--help) usage 0 ;;
+                *) ptm_log ERROR "Unknown option: $1"; usage 1 ;;
+            esac
+        done
+        
+        generate_vyos_config "$WAN_IP" "$WAN_GW"
+        ;;
+        
+    enable)
+        WAN_IP=""
+        WAN_GW=""
+        NODE="${VYOS_NODE:-pve3}"
+        VMID="${VYOS_VMID:-900}"
+        
+        while [[ $# -gt 0 ]]; do
+            case $1 in
+                --wan-ip) WAN_IP="$2"; shift 2 ;;
+                --wan-gw) WAN_GW="$2"; shift 2 ;;
+                --node) NODE="$2"; shift 2 ;;
+                --vmid) VMID="$2"; shift 2 ;;
+                -h|--help) usage 0 ;;
+                *) ptm_log ERROR "Unknown option: $1"; usage 1 ;;
+            esac
+        done
+        
+        enable_vyos_integration "$WAN_IP" "$WAN_GW" "$NODE" "$VMID"
+        ;;
+        
+    test)
+        test_vyos_connectivity
+        ;;
+        
+    status)
+        show_vyos_status
+        ;;
+        
+    -h|--help)
+        usage 0
+        ;;
+        
+    *)
+        ptm_log ERROR "Unknown command: $COMMAND"
+        usage 1
+        ;;
+esac

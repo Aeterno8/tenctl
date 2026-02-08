@@ -1,0 +1,504 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-07 15:00+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/getting-started/quickstart.rst:2
+msgid "Quick Start Guide"
+msgstr "Водич за брзи почетак"
+
+#: ../../source/getting-started/quickstart.rst:5
+msgid "Step 1: Verify Installation"
+msgstr "Корак 1: Верификујте инсталацију"
+
+#: ../../source/getting-started/quickstart.rst:12
+msgid "Expected output:"
+msgstr "Очекивани излаз:"
+
+#: ../../source/getting-started/quickstart.rst:34
+msgid "Step 2: Create Your First Tenant"
+msgstr "Корак 2: Креирате свог првог клијента"
+
+#: ../../source/getting-started/quickstart.rst:36
+msgid "Create a tenant named \"companyA\":"
+msgstr "Креирате клијента са именом \"companyA\":"
+
+#: ../../source/getting-started/quickstart.rst:47
+msgid "**Command Breakdown:**"
+msgstr "**Разлагање команде:**"
+
+#: ../../source/getting-started/quickstart.rst:49
+msgid "``-n \"companyA\"`` - Tenant name"
+msgstr "``-n \"companyA\"`` - Име клијента"
+
+#: ../../source/getting-started/quickstart.rst:50
+msgid "``-c 8`` - 8 CPU cores"
+msgstr "``-c 8`` - 8 CPU језгара"
+
+#: ../../source/getting-started/quickstart.rst:51
+msgid "``-r 16384`` - 16 GB RAM (in MB)"
+msgstr "``-r 16384`` - 16 GB RAM (у MB)"
+
+#: ../../source/getting-started/quickstart.rst:52
+msgid "``-s 500`` - 500 GB storage"
+msgstr "``-s 500`` - 500 GB складишта"
+
+#: ../../source/getting-started/quickstart.rst:53
+msgid "``-e`` - Contact email"
+msgstr "``-e`` - Контакт email"
+
+#: ../../source/getting-started/quickstart.rst:55
+msgid "**What Happens:**"
+msgstr "**Шта се дешава:**"
+
+#: ../../source/getting-started/quickstart.rst:57
+msgid "The system automatically:"
+msgstr "Систем аутоматски:"
+
+#: ../../source/getting-started/quickstart.rst:59
+msgid "Creates resource pool: ``tenant_companyA``"
+msgstr "Креира скуп ресурса: ``tenant-companyA``"
+
+#: ../../source/getting-started/quickstart.rst:60
+msgid "Allocates VLAN from the configured range (first available)"
+msgstr "Алоцира VLAN: ``100`` (први доступан)"
+
+#: ../../source/getting-started/quickstart.rst:61
+msgid "Assigns subnet from ``BASE_SUBNET`` (first available /24)"
+msgstr ""
+
+#: ../../source/getting-started/quickstart.rst:62
+msgid "Creates user group: ``group_companyA``"
+msgstr "Креира корисничку групу: ``tenant-companyA``"
+
+#: ../../source/getting-started/quickstart.rst:63
+msgid "Creates admin user: ``admin_companyA@pve`` and sets ACLs"
+msgstr ""
+
+#: ../../source/getting-started/quickstart.rst:64
+msgid "Stores configuration in pmxcfs (``/etc/pve/tenants``)"
+msgstr "Чува конфигурацију у pmxcfs"
+
+#: ../../source/getting-started/quickstart.rst:67
+msgid "Step 3: Verify Tenant"
+msgstr "Корак 3: Верификујте клијента"
+
+#: ../../source/getting-started/quickstart.rst:69
+msgid "List tenants:"
+msgstr "Прикажите све клијенте:"
+
+#: ../../source/getting-started/quickstart.rst:75
+msgid "Output:"
+msgstr "Излаз:"
+
+#: ../../source/getting-started/quickstart.rst:85
+msgid "Check resource usage:"
+msgstr "Или проверите коришћење ресурса:"
+
+#: ../../source/getting-started/quickstart.rst:92
+msgid "Step 4: Verify in Proxmox UI"
+msgstr "Корак 4: Верификујте у Proxmox Web UI"
+
+#: ../../source/getting-started/quickstart.rst:94
+msgid "Open Proxmox web interface:"
+msgstr "Отворите Proxmox web интерфејс и верификујте:"
+
+#: ../../source/getting-started/quickstart.rst:96
+msgid "**Datacenter** → **Permissions** → **Pools** - See ``tenant_companyA``"
+msgstr "Идите на **Datacenter** → **Permissions** → **Pools**"
+
+#: ../../source/getting-started/quickstart.rst:97
+msgid "**Datacenter** → **Permissions** → **Groups** - See ``group_companyA``"
+msgstr "Идите на **Datacenter** → **Permissions** → **Groups**"
+
+#: ../../source/getting-started/quickstart.rst:98
+msgid "**Datacenter** → **Permissions** - See ACLs for ``admin_companyA@pve``"
+msgstr "Требало би да видите дозволе за ``@клијент-companyA``"
+
+#: ../../source/getting-started/quickstart.rst:101
+msgid "Common Operations"
+msgstr "Уобичајене операције"
+
+#: ../../source/getting-started/quickstart.rst:104
+msgid "Modify Tenant Resources"
+msgstr "Измените ресурсе клијента"
+
+#: ../../source/getting-started/quickstart.rst:106
+msgid "Increase CPU and RAM:"
+msgstr "Повећајте CPU и RAM за клијент:"
+
+#: ../../source/getting-started/quickstart.rst:113
+msgid "Suspend Tenant"
+msgstr "Суспендујте клијент"
+
+#: ../../source/getting-started/quickstart.rst:115
+msgid "Temporarily disable access:"
+msgstr "Привремено онемогућите приступ клијенту:"
+
+#: ../../source/getting-started/quickstart.rst:121
+msgid ""
+"This disables the tenant user account. Use ``--stop-vms`` to stop running"
+" VMs."
+msgstr ""
+
+#: ../../source/getting-started/quickstart.rst:124
+msgid "Resume Tenant"
+msgstr "Настави клијента"
+
+#: ../../source/getting-started/quickstart.rst:126
+msgid "Reactivate:"
+msgstr "Поново активирајте:"
+
+#: ../../source/getting-started/quickstart.rst:133
+msgid "Monitor Health"
+msgstr "Надгледајте Здравље"
+
+#: ../../source/getting-started/quickstart.rst:135
+msgid "Check tenant components:"
+msgstr "Проверите компоненте клијента"
+
+#: ../../source/getting-started/quickstart.rst:142
+msgid "Backup Configuration"
+msgstr "**Резервна копија конфигурације**"
+
+#: ../../source/getting-started/quickstart.rst:144
+msgid "Export tenant config:"
+msgstr "Извезите конфигурацију клијента:"
+
+#: ../../source/getting-started/quickstart.rst:151
+msgid "View Audit Log"
+msgstr "Погледајте ревизорски лог"
+
+#: ../../source/getting-started/quickstart.rst:153
+msgid "See operation history:"
+msgstr "Погледајте историју операција:"
+
+#: ../../source/getting-started/quickstart.rst:160
+msgid "Remove Tenant"
+msgstr "Уклоните клијент"
+
+#: ../../source/getting-started/quickstart.rst:162
+msgid "**WARNING:** Permanently removes tenant."
+msgstr ""
+"**УПОЗОРЕЊЕ:** Ово трајно уклања клијент. Уверите се да прво направите "
+"резервну копију VM-ова."
+
+#: ../../source/getting-started/quickstart.rst:168
+msgid "Confirm by typing tenant name:"
+msgstr "Потврдите уносом имена клијента:"
+
+#: ../../source/getting-started/quickstart.rst:171
+msgid "Best Practices"
+msgstr "Најбоље праксе"
+
+#: ../../source/getting-started/quickstart.rst:173
+msgid "**Naming Conventions**"
+msgstr "**Конвенције именовања**"
+
+#: ../../source/getting-started/quickstart.rst:174
+msgid "Use lowercase with hyphens: ``company-name``, ``project-name``"
+msgstr ""
+"Користите описна имена малим словима са цртицама: ``company-name``, "
+"``project-name``"
+
+#: ../../source/getting-started/quickstart.rst:176
+msgid "**Resource Planning**"
+msgstr "**Планирање ресурса**"
+
+#: ../../source/getting-started/quickstart.rst:177
+msgid "Start conservative. Easy to increase with ``tenctl-modify``."
+msgstr ""
+"Алоцирајте ресурсе конзервативно почетно. Лако је повећати касније са "
+"``tenctl-modify``."
+
+#: ../../source/getting-started/quickstart.rst:179
+msgid "**Regular Monitoring**"
+msgstr "**Редовно надгледање**"
+
+#: ../../source/getting-started/quickstart.rst:180
+msgid "Use ``tenctl-usage`` and ``tenctl-health`` regularly."
+msgstr "Користите ``tenctl-usage`` и ``tenctl-health`` редовно."
+
+#: ../../source/getting-started/quickstart.rst:182
+msgid "**Backup Configuration**"
+msgstr "**Резервна копија конфигурације**"
+
+#: ../../source/getting-started/quickstart.rst:183
+msgid "Periodically backup: ``tenctl-backup -n <name>``"
+msgstr ""
+"Периодично правите резервну копију клијент конфигурација: ``tenctl-"
+"rezervna kopija <name> > backup.json``"
+
+#: ../../source/getting-started/quickstart.rst:185
+msgid "**Audit Trail**"
+msgstr "**Ревизорска путања**"
+
+#: ../../source/getting-started/quickstart.rst:186
+msgid "Review logs: ``tenctl-audit``"
+msgstr "Прегледајте ревизорске логове за усаглашеност: ``tenctl-audit``"
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid ""
+#~ "This tutorial walks you through creating"
+#~ " your first tenant and understanding "
+#~ "basic operations."
+#~ msgstr ""
+#~ "Овај туторијал вас проводи кроз креирање"
+#~ " вашег првог клијента и разумевање "
+#~ "основних операција."
+
+#~ msgid "Prerequisites"
+#~ msgstr "Предуслови"
+
+#~ msgid "Before starting, ensure:"
+#~ msgstr "Пре почетка, уверите се:"
+
+#~ msgid "System is installed (see :doc:`installation`)"
+#~ msgstr "Систем је инсталиран (видите :doc:`installation`)"
+
+#~ msgid "You have run ``tenctl-init``"
+#~ msgstr "Покренули сте ``tenctl-init``"
+
+#~ msgid "You have root access"
+#~ msgstr "Имате root приступ"
+
+#~ msgid "Check that the system is properly installed:"
+#~ msgstr "Проверите да ли је систем правилно инсталиран:"
+
+#~ msgid "You should see output like:"
+#~ msgstr "Требало би да видите излаз као:"
+
+#~ msgid "Step 2: Check Current Configuration"
+#~ msgstr "Корак 2: Проверите тренутну конфигурацију"
+
+#~ msgid "View your current configuration:"
+#~ msgstr "Погледајте вашу тренутну конфигурацију:"
+
+#~ msgid "You should see settings like:"
+#~ msgstr "Требало би да видите подешавања као:"
+
+#~ msgid "Step 3: List Existing Tenants"
+#~ msgstr "Корак 3: Прикажите постојеће клијенте"
+
+#~ msgid "Before creating your first tenant, check what exists:"
+#~ msgstr "Пре креирања вашег првог клијента, проверите шта постоји:"
+
+#~ msgid "For a fresh installation, you should see:"
+#~ msgstr "За нову инсталацију, требало би да видите:"
+
+#~ msgid "List tenants again:"
+#~ msgstr "Прикажите клијенте поново:"
+
+#~ msgid "You should see:"
+#~ msgstr "Требало би да видите:"
+
+#~ msgid "View detailed information about the tenant:"
+#~ msgstr "Погледајте детаљне информације о клијенту:"
+
+#~ msgid "**Resource Pool Created:**"
+#~ msgstr "**скуп ресурса креиран:**"
+
+#~ msgid "You should see ``tenant-companyA``"
+#~ msgstr "Требало би да видите ``клијент-companyA``"
+
+#~ msgid "**User Group Created:**"
+#~ msgstr "**Корисничка група креирана:**"
+
+#~ msgid "**Permissions Set:**"
+#~ msgstr "**Дозволе постављене:**"
+
+#~ msgid "Navigate to **Datacenter** → **Permissions**"
+#~ msgstr "Идите на **Datacenter** → **Permissions**"
+
+#~ msgid "Now create VMs that belong to this tenant:"
+#~ msgstr "Сада креирајте VM-ове који припадају овом клијенту:"
+
+#~ msgid "In **General** tab:"
+#~ msgstr "У **General** табу:"
+
+#~ msgid "Set **Name** to ``acme-web-01``"
+#~ msgstr "Поставите **Name** на ``acme-web-01``"
+
+#~ msgid "In **Network** tab:"
+#~ msgstr "У **Network** табу:"
+
+#~ msgid "Step 9: Check Tenant Health"
+#~ msgstr "Корак 9: Проверите здравље клијента"
+
+#~ msgid "Verify tenant components are properly configured:"
+#~ msgstr "Верификујте да су компоненте клијента правилно конфигурисане:"
+
+#~ msgid "Step 10: Monitor Resource Usage"
+#~ msgstr "Корак 10: Надгледајтете коришћење ресурса"
+
+#~ msgid "Check how much resources the tenant is using:"
+#~ msgstr "Проверите колико ресурса клијент користи:"
+
+#~ msgid "This will:"
+#~ msgstr "Ово ће:"
+
+#~ msgid "Pause all VMs in the tenant pool"
+#~ msgstr "Паузирати све VM-ове у клијент pool-у"
+
+#~ msgid "Revoke user group permissions"
+#~ msgstr "Опозвати дозволе корисничке групе"
+
+#~ msgid "Mark tenant as suspended"
+#~ msgstr "Означити клијент као суспендован"
+
+#~ msgid "Reactivate a suspended tenant:"
+#~ msgstr "Поново активирајте суспендовани клијент:"
+
+#~ msgid "Resume all VMs"
+#~ msgstr "Наставити све VM-ове"
+
+#~ msgid "Restore permissions"
+#~ msgstr "Вратити дозволе"
+
+#~ msgid "Mark tenant as active"
+#~ msgstr "Означити клијент као активан"
+
+#~ msgid "Backup Tenant Configuration"
+#~ msgstr "Резервна копија конфигурације клијента"
+
+#~ msgid "See all operations performed on the tenant:"
+#~ msgstr "Погледајте све операције извршене на клијенту:"
+
+#~ msgid "You'll be prompted to confirm:"
+#~ msgstr "Биће вам затражено да потврдите:"
+
+#~ msgid "Step 11: Create Additional Tenants"
+#~ msgstr "Корак 11: Креирате додатне клијенте"
+
+#~ msgid "Create more tenants following the same pattern:"
+#~ msgstr "Креирате више клијента пратећи исти образац:"
+
+#~ msgid "VyOS Integration (Optional)"
+#~ msgstr "VyOS интеграција (опционо)"
+
+#~ msgid "If you have a VyOS router, configure network routing:"
+#~ msgstr "Ако имате VyOS ruter, конфигуришите мрежно рутирање:"
+
+#~ msgid "This configures:"
+#~ msgstr "Ово конфигурише:"
+
+#~ msgid "VLAN interface on VyOS"
+#~ msgstr "VLAN интерфејс на VyOS"
+
+#~ msgid "IP address for the gateway"
+#~ msgstr "IP адресу за gateway"
+
+#~ msgid "NAT rules for internet access"
+#~ msgstr "NAT правила за интернет приступ"
+
+
+#~ msgid "Troubleshooting"
+#~ msgstr "Решавање проблема"
+
+#~ msgid "**Problem: VLAN allocation failed**"
+#~ msgstr "**Проблем: VLAN алокација није успела**"
+
+
+#~ msgid "**Problem: Resource pool creation failed**"
+#~ msgstr "**Проблем: Креирање скуп ресурса-а није успело**"
+
+#~ msgid ""
+#~ "**Solution:** Choose a different tenant "
+#~ "name or remove the existing pool."
+#~ msgstr "**Решење:** Изаберите друго име клијента или уклоните постојећи pool."
+
+#~ msgid "**Problem: Permission denied**"
+#~ msgstr "**Проблем: Дозвола одбијена**"
+
+#~ msgid "**Solution:** Run commands as root or with sudo."
+#~ msgstr "**Решење:** Покрените команде као root или са sudo."
+
+#~ msgid "Next Steps"
+#~ msgstr "Следећи кораци"
+
+#~ msgid ":doc:`../user-guide/tenant-lifecycle` - Learn all tenant operations"
+#~ msgstr ":doc:`../user-guide/клијент-lifecycle` - Научите све операције клијента"
+
+#~ msgid ":doc:`../user-guide/networking` - Configure advanced networking"
+#~ msgstr ":doc:`../user-guide/networking` - Конфигуришите напредно умрежавање"
+
+#~ msgid ":doc:`../admin-guide/configuration` - Customize system settings"
+#~ msgstr ":doc:`../admin-guide/configuration` - Прилагодите подешавања система"
+
+#~ msgid ":doc:`../reference/index` - Complete command reference"
+#~ msgstr ":doc:`../reference/index` - Потпуна референца команди"
+
+#~ msgid "Assigns subnet: ``10.100.0.0/24``"
+#~ msgstr "Додељује подмрежу: ``10.100.0.0/24``"
+
+#~ msgid "Sets permissions for the tenant"
+#~ msgstr "Поставља дозволе за клијент"
+
+#~ msgid "Step 5: Create VMs for Tenant"
+#~ msgstr "Корак 5: Креирате VM-ове за клијент"
+
+#~ msgid "**Using Proxmox Web UI:**"
+#~ msgstr "**Користећи Proxmox Web UI:**"
+
+#~ msgid "Create new VM"
+#~ msgstr "Креирате нови VM"
+
+#~ msgid "Set **Pool** to ``tenant-companyA``"
+#~ msgstr "Поставите **Pool** на ``клијент-companyA``"
+
+#~ msgid "Set **VLAN Tag** to ``100``"
+#~ msgstr "Поставите **VLAN Tag** на ``100``"
+
+#~ msgid "Configure IP in ``10.100.0.0/24`` range"
+#~ msgstr "Конфигуришите IP у ``10.100.0.0/24`` опсегу"
+
+#~ msgid "**Using pvesh CLI:**"
+#~ msgstr "**Користећи pvesh CLI:**"
+
+#~ msgid "This pauses VMs and revokes permissions."
+#~ msgstr "Ово паузира VM-ове и опозива дозволе."
+
+#~ msgid "**VLAN Planning**"
+#~ msgstr "**VLAN планирање**"
+
+#~ msgid "Reserve ranges (e.g., 100-150 production, 151-200 testing)."
+#~ msgstr ""
+#~ "Резервишите VLAN опсеге за различите "
+#~ "намене (нпр., 100-150 за продукцију, "
+#~ "151-200 за тестирање)."
+

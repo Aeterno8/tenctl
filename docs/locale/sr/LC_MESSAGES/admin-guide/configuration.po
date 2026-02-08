@@ -1,0 +1,750 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/admin-guide/configuration.rst:2
+msgid "Configuration Reference"
+msgstr "Референца конфигурације"
+
+#: ../../source/admin-guide/configuration.rst:4
+msgid "Complete reference for ``/usr/local/share/tenctl/config/tenant.conf``."
+msgstr "Комплетна референца за ``/etc/tenctl/клијент.conf``."
+
+#: ../../source/admin-guide/configuration.rst:7
+msgid "Configuration File Location"
+msgstr "Локација конфигурационог фајла"
+
+#: ../../source/admin-guide/configuration.rst:9
+msgid "The main configuration file is located at::"
+msgstr "Главни конфигурациони фајл се налази на::"
+
+#: ../../source/admin-guide/configuration.rst:13
+msgid "This file contains global settings for the multi-tenant system."
+msgstr "Овај фајл садржи глобална подешавања за више-клијент систем."
+
+#: ../../source/admin-guide/configuration.rst:16
+msgid "VLAN Configuration"
+msgstr "VLAN конфигурација"
+
+#: ../../source/admin-guide/configuration.rst:19
+msgid "VLAN_START"
+msgstr "VLAN_START"
+
+#: ../../source/admin-guide/configuration.rst:21
+#: ../../source/admin-guide/configuration.rst:36
+#: ../../source/admin-guide/configuration.rst:117
+#: ../../source/admin-guide/configuration.rst:218
+#: ../../source/admin-guide/configuration.rst:353
+msgid "**Type:** Integer"
+msgstr "**Тип:** Integer"
+
+#: ../../source/admin-guide/configuration.rst:23
+msgid "**Default:** ``100``"
+msgstr "**Подразумевано:** ``100``"
+
+#: ../../source/admin-guide/configuration.rst:25
+msgid "**Description:** Starting VLAN ID for tenant allocation pool."
+msgstr "**Опис:** Почетни VLAN ID за pool за алокацију клијента."
+
+#: ../../source/admin-guide/configuration.rst:27
+#: ../../source/admin-guide/configuration.rst:44
+#: ../../source/admin-guide/configuration.rst:64
+#: ../../source/admin-guide/configuration.rst:85
+#: ../../source/admin-guide/configuration.rst:103
+#: ../../source/admin-guide/configuration.rst:123
+#: ../../source/admin-guide/configuration.rst:138
+#: ../../source/admin-guide/configuration.rst:160
+#: ../../source/admin-guide/configuration.rst:186
+#: ../../source/admin-guide/configuration.rst:209
+#: ../../source/admin-guide/configuration.rst:224
+#: ../../source/admin-guide/configuration.rst:244
+#: ../../source/admin-guide/configuration.rst:268
+#: ../../source/admin-guide/configuration.rst:290
+#: ../../source/admin-guide/configuration.rst:305
+#: ../../source/admin-guide/configuration.rst:329
+#: ../../source/admin-guide/configuration.rst:344
+#: ../../source/admin-guide/configuration.rst:359
+#: ../../source/admin-guide/configuration.rst:374
+#: ../../source/admin-guide/configuration.rst:391
+#: ../../source/admin-guide/configuration.rst:406
+#: ../../source/admin-guide/configuration.rst:421
+#: ../../source/admin-guide/configuration.rst:436
+#: ../../source/admin-guide/configuration.rst:451
+msgid "**Example:**"
+msgstr "**Пример:**"
+
+#: ../../source/admin-guide/configuration.rst:34
+msgid "VLAN_END"
+msgstr "VLAN_END"
+
+#: ../../source/admin-guide/configuration.rst:38
+msgid "**Default:** ``999``"
+msgstr "**Подразумевано:** ``999``"
+
+#: ../../source/admin-guide/configuration.rst:40
+msgid "**Description:** Ending VLAN ID for tenant allocation pool."
+msgstr "**Опис:** Завршни VLAN ID за pool за алокацију клијента."
+
+#: ../../source/admin-guide/configuration.rst:42
+msgid "**Valid Range:** VLAN_START to 4094 (maximum VLAN ID)"
+msgstr "**Важећи опсег:** VLAN_START до 4094 (максимални VLAN ID)"
+
+#: ../../source/admin-guide/configuration.rst:50
+msgid "**Note:** Total available VLANs = VLAN_END - VLAN_START + 1"
+msgstr "**Напомена:** Укупно доступних VLAN-ова = VLAN_END - VLAN_START + 1"
+
+#: ../../source/admin-guide/configuration.rst:53
+msgid "Network Configuration"
+msgstr "Конфигурација мреже"
+
+#: ../../source/admin-guide/configuration.rst:56
+msgid "BASE_SUBNET"
+msgstr "BASE_SUBNET"
+
+#: ../../source/admin-guide/configuration.rst:58
+msgid "**Type:** String (IP prefix)"
+msgstr "**Тип:** String (IP префикс)"
+
+#: ../../source/admin-guide/configuration.rst:60
+msgid "**Default:** ``\"10.100\"``"
+msgstr "**Подразумевано:** ``\"10.100\"``"
+
+#: ../../source/admin-guide/configuration.rst:62
+msgid ""
+"**Description:** Base subnet prefix for tenant networks. Each tenant "
+"receives a /24 subnet."
+msgstr ""
+"**Опис:** Основни префикс подмреже за мреже клијента. Сваки клијент "
+"добија /24 подмрежу."
+
+#: ../../source/admin-guide/configuration.rst:70
+msgid "This results in subnets like:"
+msgstr "Ово резултује подмрежама као:"
+
+#: ../../source/admin-guide/configuration.rst:72
+msgid "Tenant 1: 10.100.0.0/24"
+msgstr "клијент 1 (VLAN 100): 10.100.0.0/24"
+
+#: ../../source/admin-guide/configuration.rst:73
+msgid "Tenant 2: 10.100.1.0/24"
+msgstr "клијент 2 (VLAN 101): 10.100.1.0/24"
+
+#: ../../source/admin-guide/configuration.rst:74
+msgid "Tenant N: 10.100.N-1.0/24"
+msgstr "клијент 2 (VLAN 101): 10.100.1.0/24"
+
+#: ../../source/admin-guide/configuration.rst:77
+msgid "NETWORK_BRIDGE"
+msgstr "NETWORK_BRIDGE"
+
+#: ../../source/admin-guide/configuration.rst:79
+#: ../../source/admin-guide/configuration.rst:201
+#: ../../source/admin-guide/configuration.rst:238
+#: ../../source/admin-guide/configuration.rst:299
+#: ../../source/admin-guide/configuration.rst:338
+#: ../../source/admin-guide/configuration.rst:368
+#: ../../source/admin-guide/configuration.rst:400
+#: ../../source/admin-guide/configuration.rst:415
+msgid "**Type:** String"
+msgstr "**Тип:** String"
+
+#: ../../source/admin-guide/configuration.rst:81
+msgid "**Default:** ``\"vmbr0\"``"
+msgstr "**Подразумевано:** ``\"vmbr0\"``"
+
+#: ../../source/admin-guide/configuration.rst:83
+msgid "**Description:** Default Proxmox network bridge for VLAN configuration."
+msgstr "**Опис:** Подразумевани Proxmox мрежни bridge за VLAN конфигурацију."
+
+#: ../../source/admin-guide/configuration.rst:92
+msgid "Storage Configuration"
+msgstr "Конфигурација складишта"
+
+#: ../../source/admin-guide/configuration.rst:95
+msgid "TENANT_CONFIG_DIR"
+msgstr "TENANT_CONFIG_DIR"
+
+#: ../../source/admin-guide/configuration.rst:97
+#: ../../source/admin-guide/configuration.rst:262
+msgid "**Type:** String (path)"
+msgstr "**Тип:** String (путања)"
+
+#: ../../source/admin-guide/configuration.rst:99
+msgid "**Default:** ``\"/etc/pve/tenants\"``"
+msgstr "**Подразумевано:** ``\"/etc/pve/tenants\"``"
+
+#: ../../source/admin-guide/configuration.rst:101
+msgid ""
+"**Description:** Directory for tenant configuration files. Located in "
+"pmxcfs for automatic cluster synchronization."
+msgstr ""
+"**Опис:** Директоријум за конфигурационе фајлове клијента. Налази се у "
+"pmxcfs за аутоматску синхронизацију кластера."
+
+#: ../../source/admin-guide/configuration.rst:109
+msgid ""
+"**Note:** This directory is automatically synchronized across cluster "
+"nodes via pmxcfs."
+msgstr ""
+"**Напомена:** Овај директоријум се аутоматски синхронизује преко чворова "
+"кластера преко pmxcfs."
+
+#: ../../source/admin-guide/configuration.rst:112
+msgid "Resource Defaults"
+msgstr "Подразумевани ресурси"
+
+#: ../../source/admin-guide/configuration.rst:115
+msgid "DEFAULT_CPU_LIMIT"
+msgstr "DEFAULT_CPU_LIMIT"
+
+#: ../../source/admin-guide/configuration.rst:119
+msgid "**Default:** ``8``"
+msgstr "**Подразумевано:** ``8``"
+
+#: ../../source/admin-guide/configuration.rst:121
+msgid "**Description:** Default CPU core limit for new tenants."
+msgstr "**Опис:** Подразумевано ограничење CPU језгара за нове клијенте."
+
+#: ../../source/admin-guide/configuration.rst:130
+msgid "DEFAULT_RAM_LIMIT"
+msgstr "DEFAULT_RAM_LIMIT"
+
+#: ../../source/admin-guide/configuration.rst:132
+msgid "**Type:** Integer (MB)"
+msgstr "**Тип:** Integer (MB)"
+
+#: ../../source/admin-guide/configuration.rst:134
+msgid "**Default:** ``16384`` (16 GB)"
+msgstr "**Подразумевано:** ``16384`` (16 GB)"
+
+#: ../../source/admin-guide/configuration.rst:136
+msgid "**Description:** Default RAM limit for new tenants in megabytes."
+msgstr "**Опис:** Подразумевано ограничење RAM-а за нове клијенте у мегабајтима."
+
+#: ../../source/admin-guide/configuration.rst:144
+msgid "**Conversion:**"
+msgstr "**Конверзија:**"
+
+#: ../../source/admin-guide/configuration.rst:146
+msgid "1 GB = 1024 MB"
+msgstr "1 GB = 1024 MB"
+
+#: ../../source/admin-guide/configuration.rst:147
+msgid "8 GB = 8192 MB"
+msgstr "8 GB = 8192 MB"
+
+#: ../../source/admin-guide/configuration.rst:148
+msgid "16 GB = 16384 MB"
+msgstr "16 GB = 16384 MB"
+
+#: ../../source/admin-guide/configuration.rst:149
+msgid "32 GB = 32768 MB"
+msgstr "32 GB = 32768 MB"
+
+#: ../../source/admin-guide/configuration.rst:152
+msgid "DEFAULT_STORAGE_LIMIT"
+msgstr "DEFAULT_STORAGE_LIMIT"
+
+#: ../../source/admin-guide/configuration.rst:154
+msgid "**Type:** Integer (GB)"
+msgstr "**Тип:** Integer (GB)"
+
+#: ../../source/admin-guide/configuration.rst:156
+msgid "**Default:** ``500``"
+msgstr "**Подразумевано:** ``500``"
+
+#: ../../source/admin-guide/configuration.rst:158
+msgid "**Description:** Default storage limit for new tenants in gigabytes."
+msgstr ""
+"**Опис:** Подразумевано ограничење складишта за нове клијенте у "
+"гигабајтима."
+
+#: ../../source/admin-guide/configuration.rst:166
+msgid ""
+"**Note:** Resource limits are monitored by the ``tenctl-watcher`` systemd"
+" service."
+msgstr ""
+"**Напомена:** Ограничења ресурса се надгледају преко ``tenctl-watcher`` "
+"systemd сервиса."
+
+#: ../../source/admin-guide/configuration.rst:169
+msgid "SDN Configuration"
+msgstr "SDN конфигурација"
+
+#: ../../source/admin-guide/configuration.rst:172
+msgid "SDN_ZONE_TYPE"
+msgstr "SDN_ZONE_TYPE"
+
+#: ../../source/admin-guide/configuration.rst:174
+msgid "**Type:** String (enum)"
+msgstr "**Тип:** String (enum)"
+
+#: ../../source/admin-guide/configuration.rst:176
+msgid "**Default:** ``\"vxlan\"``"
+msgstr "**Подразумевано:** ``\"vxlan\"``"
+
+#: ../../source/admin-guide/configuration.rst:178
+msgid "**Valid Values:**"
+msgstr "**Важеће вредности:**"
+
+#: ../../source/admin-guide/configuration.rst:180
+msgid "``\"vlan\"`` - VLAN zone (single-node or managed switch)"
+msgstr "``\"vlan\"`` - VLAN зона (један čvor или управљани switch)"
+
+#: ../../source/admin-guide/configuration.rst:181
+msgid "``\"vxlan\"`` - VXLAN zone (multi-node overlay)"
+msgstr "``\"vxlan\"`` - VXLAN зона (overlay са више чворова)"
+
+#: ../../source/admin-guide/configuration.rst:182
+msgid "``\"simple\"`` - Simple zone (untagged)"
+msgstr "``\"simple\"`` - Једноставна зона (untagged)"
+
+#: ../../source/admin-guide/configuration.rst:184
+msgid "**Description:** SDN zone type for Proxmox network virtualization."
+msgstr "**Опис:** SDN тип зоне за Proxmox мрежну виртуализацију."
+
+#: ../../source/admin-guide/configuration.rst:192
+msgid "**Recommendations:**"
+msgstr "**Препоруке:**"
+
+#: ../../source/admin-guide/configuration.rst:194
+msgid "Single-node: Use ``\"vlan\"``"
+msgstr "Један čvor: Користите ``\"vlan\"``"
+
+#: ../../source/admin-guide/configuration.rst:195
+msgid "Multi-node cluster: Use ``\"vxlan\"``"
+msgstr "Кластер са више чворова: Користите ``\"vxlan\"``"
+
+#: ../../source/admin-guide/configuration.rst:196
+msgid "Basic setup: Use ``\"simple\"``"
+msgstr "Основно подешавање: Користите ``\"simple\"``"
+
+#: ../../source/admin-guide/configuration.rst:199
+msgid "SDN_ZONE_NAME"
+msgstr "SDN_ZONE_NAME"
+
+#: ../../source/admin-guide/configuration.rst:203
+msgid "**Default:** ``\"tenants\"``"
+msgstr "**Подразумевано:** ``\"tenants\"``"
+
+#: ../../source/admin-guide/configuration.rst:205
+msgid "**Max Length:** 8 characters (Proxmox API limitation)"
+msgstr "**Максимална дужина:** 8 карактера (Proxmox API ограничење)"
+
+#: ../../source/admin-guide/configuration.rst:207
+msgid "**Description:** Name of the SDN zone."
+msgstr "**Опис:** Име SDN зоне."
+
+#: ../../source/admin-guide/configuration.rst:216
+msgid "VXLAN_PORT"
+msgstr "VXLAN_PORT"
+
+#: ../../source/admin-guide/configuration.rst:220
+msgid "**Default:** ``4789``"
+msgstr "**Подразумевано:** ``4789``"
+
+#: ../../source/admin-guide/configuration.rst:222
+msgid ""
+"**Description:** UDP port for VXLAN encapsulation (only used if "
+"SDN_ZONE_TYPE=\"vxlan\")."
+msgstr ""
+"**Опис:** UDP порт за VXLAN енкапсулацију (користи се само ако је "
+"SDN_ZONE_TYPE=\"vxlan\")."
+
+#: ../../source/admin-guide/configuration.rst:230
+msgid "**Note:** Standard VXLAN port is 4789."
+msgstr "**Напомена:** Стандардни VXLAN порт је 4789."
+
+#: ../../source/admin-guide/configuration.rst:233
+msgid "Permissions Configuration"
+msgstr "Конфигурација дозвола"
+
+#: ../../source/admin-guide/configuration.rst:236
+msgid "TENANT_ADMIN_ROLE"
+msgstr "TENANT_ADMIN_ROLE"
+
+#: ../../source/admin-guide/configuration.rst:240
+msgid "**Default:** ``\"PVEPoolAdmin\"``"
+msgstr "**Подразумевано:** ``\"PVEPoolAdmin\"``"
+
+#: ../../source/admin-guide/configuration.rst:242
+msgid "**Description:** Proxmox role assigned to tenant admin users."
+msgstr "**Опис:** Proxmox улога додељена администраторима клијента."
+
+#: ../../source/admin-guide/configuration.rst:250
+msgid "**Available Roles:**"
+msgstr "**Доступне улоге:**"
+
+#: ../../source/admin-guide/configuration.rst:252
+msgid "``PVEPoolAdmin`` - Pool administrator (recommended)"
+msgstr "``PVEPoolAdmin`` - Pool администратор (препоручено)"
+
+#: ../../source/admin-guide/configuration.rst:253
+msgid "``PVEPoolUser`` - Pool user (read-only)"
+msgstr "``PVEPoolUser`` - Pool корисник (само читање)"
+
+#: ../../source/admin-guide/configuration.rst:254
+msgid "Custom role created in Proxmox"
+msgstr "Прилагођена улога креирана у Proxmox-у"
+
+#: ../../source/admin-guide/configuration.rst:257
+msgid "Logging Configuration"
+msgstr "Конфигурација логовања"
+
+#: ../../source/admin-guide/configuration.rst:260
+msgid "LOG_DIR"
+msgstr "LOG_DIR"
+
+#: ../../source/admin-guide/configuration.rst:264
+msgid "**Default:** ``\"/var/log/tenctl\"``"
+msgstr "**Подразумевано:** ``\"/var/log/tenctl\"``"
+
+#: ../../source/admin-guide/configuration.rst:266
+msgid "**Description:** Directory for tenant management logs."
+msgstr "**Опис:** Директоријум за логове управљања клијент-има."
+
+#: ../../source/admin-guide/configuration.rst:274
+msgid "**Log Files:**"
+msgstr "**Лог фајлови:**"
+
+#: ../../source/admin-guide/configuration.rst:276
+msgid "``tenant-management.log`` - All operations and audit events"
+msgstr "``клијент.log`` - Лог општих операција"
+
+#: ../../source/admin-guide/configuration.rst:279
+msgid "Email Notifications"
+msgstr "Email обавештења"
+
+#: ../../source/admin-guide/configuration.rst:282
+msgid "EMAIL_NOTIFICATIONS_ENABLED"
+msgstr "EMAIL_NOTIFICATIONS_ENABLED"
+
+#: ../../source/admin-guide/configuration.rst:284
+#: ../../source/admin-guide/configuration.rst:323
+msgid "**Type:** Boolean"
+msgstr "**Тип:** Boolean"
+
+#: ../../source/admin-guide/configuration.rst:286
+#: ../../source/admin-guide/configuration.rst:325
+msgid "**Default:** ``true``"
+msgstr "**Подразумевано:** ``true``"
+
+#: ../../source/admin-guide/configuration.rst:288
+msgid "**Description:** Enable email notifications for tenant operations."
+msgstr "**Опис:** Омогући email обавештења за операције клијента."
+
+#: ../../source/admin-guide/configuration.rst:297
+msgid "SMTP_ENDPOINT"
+msgstr "SMTP_ENDPOINT"
+
+#: ../../source/admin-guide/configuration.rst:301
+msgid "**Default:** ``\"Gmail\"``"
+msgstr "**Подразумевано:** ``\"Gmail\"``"
+
+#: ../../source/admin-guide/configuration.rst:303
+msgid ""
+"**Description:** Name of SMTP endpoint configured in Proxmox "
+"``/etc/pve/notifications.cfg``."
+msgstr ""
+"**Опис:** Име SMTP endpoint-а конфигурисаног у Proxmox "
+"``/etc/pve/notifications.cfg``."
+
+#: ../../source/admin-guide/configuration.rst:311
+msgid "**Note:** Configure SMTP in Proxmox VE first:"
+msgstr "**Напомена:** Прво конфигуришите SMTP у Proxmox VE:"
+
+#: ../../source/admin-guide/configuration.rst:313
+msgid "Navigate to Datacenter → Notifications"
+msgstr "Навигирајте до Datacenter → Notifications"
+
+#: ../../source/admin-guide/configuration.rst:314
+msgid "Add SMTP endpoint"
+msgstr "Додајте SMTP endpoint"
+
+#: ../../source/admin-guide/configuration.rst:315
+msgid "Use the name here"
+msgstr "Користите име овде"
+
+#: ../../source/admin-guide/configuration.rst:318
+msgid "VyOS Router Configuration"
+msgstr "VyOS ruter конфигурација"
+
+#: ../../source/admin-guide/configuration.rst:321
+msgid "VYOS_ENABLED"
+msgstr "VYOS_ENABLED"
+
+#: ../../source/admin-guide/configuration.rst:327
+msgid "**Description:** Enable VyOS router integration for L3 routing and NAT."
+msgstr "**Опис:** Омогући VyOS ruter интеграцију за L3 рутирање и NAT."
+
+#: ../../source/admin-guide/configuration.rst:336
+msgid "VYOS_NODE"
+msgstr "VYOS_NODE"
+
+#: ../../source/admin-guide/configuration.rst:340
+msgid "**Default:** ``\"pve3\"``"
+msgstr "**Подразумевано:** ``\"pve3\"``"
+
+#: ../../source/admin-guide/configuration.rst:342
+msgid "**Description:** Proxmox node name where VyOS VM is running."
+msgstr "**Опис:** Име Proxmox čvora на коме ради VyOS VM."
+
+#: ../../source/admin-guide/configuration.rst:351
+msgid "VYOS_VMID"
+msgstr "VYOS_VMID"
+
+#: ../../source/admin-guide/configuration.rst:355
+msgid "**Default:** ``900``"
+msgstr "**Подразумевано:** ``900``"
+
+#: ../../source/admin-guide/configuration.rst:357
+msgid "**Description:** VM ID of the VyOS router."
+msgstr "**Опис:** VM ID VyOS ruter-а."
+
+#: ../../source/admin-guide/configuration.rst:366
+msgid "VYOS_SSH_USER"
+msgstr "VYOS_SSH_USER"
+
+#: ../../source/admin-guide/configuration.rst:370
+msgid "**Default:** ``\"vyos\"``"
+msgstr "**Подразумевано:** ``\"vyos\"``"
+
+#: ../../source/admin-guide/configuration.rst:372
+msgid "**Description:** SSH username for VyOS router."
+msgstr "**Опис:** SSH корисничко име за VyOS ruter."
+
+#: ../../source/admin-guide/configuration.rst:380
+msgid "**Note:** Default VyOS username is ``vyos``."
+msgstr "**Напомена:** Подразумевано VyOS корисничко име је ``vyos``."
+
+#: ../../source/admin-guide/configuration.rst:383
+msgid "VYOS_IP"
+msgstr "VYOS_IP"
+
+#: ../../source/admin-guide/configuration.rst:385
+#: ../../source/admin-guide/configuration.rst:430
+#: ../../source/admin-guide/configuration.rst:445
+msgid "**Type:** String (IP address)"
+msgstr "**Тип:** String (IP адреса)"
+
+#: ../../source/admin-guide/configuration.rst:387
+#: ../../source/admin-guide/configuration.rst:432
+msgid "**Default:** ``\"192.168.1.6\"``"
+msgstr "**Подразумевано:** ``\"192.168.1.6\"``"
+
+#: ../../source/admin-guide/configuration.rst:389
+msgid "**Description:** Management IP address of VyOS router."
+msgstr "**Опис:** WAN IP адреса на VyOS ruter-у."
+
+#: ../../source/admin-guide/configuration.rst:398
+msgid "VYOS_WAN_INTERFACE"
+msgstr "VYOS_WAN_INTERFACE"
+
+#: ../../source/admin-guide/configuration.rst:402
+msgid "**Default:** ``\"eth0\"``"
+msgstr "**Подразумевано:** ``\"eth0\"``"
+
+#: ../../source/admin-guide/configuration.rst:404
+msgid "**Description:** WAN interface on VyOS router."
+msgstr "**Опис:** WAN интерфејс на VyOS ruter-у."
+
+#: ../../source/admin-guide/configuration.rst:413
+msgid "VYOS_LAN_INTERFACE"
+msgstr "VYOS_LAN_INTERFACE"
+
+#: ../../source/admin-guide/configuration.rst:417
+msgid "**Default:** ``\"eth1\"``"
+msgstr "**Подразумевано:** ``\"eth1\"``"
+
+#: ../../source/admin-guide/configuration.rst:419
+msgid "**Description:** LAN interface on VyOS for tenant VLANs."
+msgstr "**Опис:** LAN интерфејс на VyOS-у за клијент VLAN-ове."
+
+#: ../../source/admin-guide/configuration.rst:428
+msgid "VYOS_WAN_IP"
+msgstr "VYOS_WAN_IP"
+
+#: ../../source/admin-guide/configuration.rst:434
+msgid "**Description:** WAN IP address on VyOS router."
+msgstr "**Опис:** WAN IP адреса на VyOS ruter-у."
+
+#: ../../source/admin-guide/configuration.rst:443
+msgid "VYOS_WAN_GATEWAY"
+msgstr "VYOS_WAN_GATEWAY"
+
+#: ../../source/admin-guide/configuration.rst:447
+msgid "**Default:** ``\"192.168.1.1\"``"
+msgstr "**Подразумевано:** ``\"192.168.1.1\"``"
+
+#: ../../source/admin-guide/configuration.rst:449
+msgid "**Description:** WAN gateway for VyOS router."
+msgstr "**Опис:** WAN gateway за VyOS ruter."
+
+#: ../../source/admin-guide/configuration.rst:458
+msgid "Configuration Examples"
+msgstr "Примери конфигурације"
+
+#: ../../source/admin-guide/configuration.rst:461
+msgid "Minimal Configuration"
+msgstr "Минимална конфигурација"
+
+#: ../../source/admin-guide/configuration.rst:463
+msgid "Basic setup for single-node Proxmox:"
+msgstr "Основно подешавање за Proxmox са једним čvorom:"
+
+#: ../../source/admin-guide/configuration.rst:500
+msgid "Multi-Node Cluster Configuration"
+msgstr "Конфигурација кластера са више чворова"
+
+#: ../../source/admin-guide/configuration.rst:502
+msgid "Configuration for multi-node cluster with VXLAN:"
+msgstr "Конфигурација за кластер са више чворова са VXLAN-ом:"
+
+#: ../../source/admin-guide/configuration.rst:535
+msgid "Best Practices"
+msgstr "Најбоље праксе"
+
+#: ../../source/admin-guide/configuration.rst:538
+msgid "VLAN Planning"
+msgstr "Планирање VLAN-ова"
+
+#: ../../source/admin-guide/configuration.rst:540
+msgid ""
+"Reserve ranges for different purposes (e.g., 100-299 production, 300-499 "
+"development)"
+msgstr ""
+"Резервишите опсеге за различите намене (нпр. 100-299 продукција, 300-499 "
+"развој)"
+
+#: ../../source/admin-guide/configuration.rst:541
+msgid "Don't use VLANs below 10 (often reserved for management)"
+msgstr "Не користите VLAN-ове испод 10 (често резервисани за управљање)"
+
+#: ../../source/admin-guide/configuration.rst:542
+msgid "Document VLAN allocations"
+msgstr "Документујте VLAN алокације"
+
+#: ../../source/admin-guide/configuration.rst:545
+msgid "Resource Planning"
+msgstr "Планирање ресурса"
+
+#: ../../source/admin-guide/configuration.rst:547
+msgid "Set conservative defaults"
+msgstr "Поставите конзервативне подразумеване вредности"
+
+#: ../../source/admin-guide/configuration.rst:548
+msgid "Monitor actual usage to adjust limits"
+msgstr "Надгледајтете стварно коришћење да прилагодите ограничења"
+
+#: ../../source/admin-guide/configuration.rst:549
+msgid "Plan for growth (increase VLAN_END as needed)"
+msgstr "Планирајте за раст (повећајте VLAN_END по потреби)"
+
+#: ../../source/admin-guide/configuration.rst:552
+msgid "Security"
+msgstr "Безбедност"
+
+#: ../../source/admin-guide/configuration.rst:554
+msgid "Restrict access to configuration file::"
+msgstr "Ограничите приступ конфигурационом фајлу::"
+
+#: ../../source/admin-guide/configuration.rst:558
+msgid "Use strong VyOS credentials"
+msgstr "Користите јаке VyOS креденцијале"
+
+#: ../../source/admin-guide/configuration.rst:559
+msgid "Enable email notifications for audit trail"
+msgstr "Омогућите email обавештења за ревизијски траг"
+
+#: ../../source/admin-guide/configuration.rst:562
+msgid "Cluster Configuration"
+msgstr "Конфигурација кластера"
+
+#: ../../source/admin-guide/configuration.rst:564
+msgid "Use VXLAN for multi-node setups"
+msgstr "Користите VXLAN за подешавања са више чворова"
+
+#: ../../source/admin-guide/configuration.rst:565
+msgid "Ensure consistent configuration across nodes"
+msgstr "Обезбедите доследну конфигурацију преко чворова"
+
+#: ../../source/admin-guide/configuration.rst:566
+msgid "Test failover scenarios"
+msgstr "Тестирајте failover сценарије"
+
+#: ../../source/admin-guide/configuration.rst:569
+msgid "Validating Configuration"
+msgstr "Валидација конфигурације"
+
+#: ../../source/admin-guide/configuration.rst:571
+msgid "After modifying configuration, validate:"
+msgstr "После измене конфигурације, валидирајте:"
+
+#: ../../source/admin-guide/configuration.rst:585
+msgid "See Also"
+msgstr "Видите такође"
+
+#: ../../source/admin-guide/configuration.rst:587
+msgid ":doc:`operations` - Operations and maintenance procedures"
+msgstr ":doc:`operations` - Процедуре за операције и одржавање"
+
+#: ../../source/admin-guide/configuration.rst:588
+msgid ":doc:`../getting-started/index` - Getting started guide"
+msgstr ":doc:`../getting-started/installation` - Водич за инсталацију"
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid ":doc:`cluster-setup` - Multi-node cluster configuration"
+#~ msgstr ":doc:`cluster-setup` - Конфигурација кластера са више чворова"
+
+#~ msgid ":doc:`security` - Security best practices"
+#~ msgstr ":doc:`security` - Најбоље праксе безбедности"
+
+#~ msgid "Tenant N (VLAN 100+N-1): 10.100.N-1.0/24"
+#~ msgstr "клијент N (VLAN 100+N-1): 10.100.N-1.0/24"
+
+#~ msgid "``audit.log`` - Audit trail"
+#~ msgstr "``audit.log`` - Ревизијски траг"
+
+#~ msgid "``error.log`` - Error messages"
+#~ msgstr "``error.log`` - Поруке о грешкама"
+
+#~ msgid "**Description:** управљање IP address of VyOS router."
+#~ msgstr "**Опис:** управљање IP адреса VyOS ruter-а."
+

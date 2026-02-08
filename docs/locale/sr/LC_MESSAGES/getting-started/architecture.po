@@ -1,0 +1,699 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/getting-started/architecture.rst:2
+msgid "System Architecture"
+msgstr "Архитектура система"
+
+#: ../../source/getting-started/architecture.rst:5
+msgid "Tenant Isolation Model"
+msgstr "Модел изолације клијента"
+
+#: ../../source/getting-started/architecture.rst:7
+msgid "Multiple layers ensure complete isolation:"
+msgstr "Више слојева осигурава изолацију између клијента:"
+
+#: ../../source/getting-started/architecture.rst:9
+msgid "**Layer 1: Resource Pools**"
+msgstr "**Слој 1: Resource pool**"
+
+#: ../../source/getting-started/architecture.rst:10
+msgid "Proxmox resource pools providing isolation and grouping of tenants"
+msgstr "Proxmox resource pool обезбеђује изолацију и груписање клијената"
+
+#: ../../source/getting-started/architecture.rst:12
+msgid "**Layer 2: Network VLANs**"
+msgstr "**Слој 2: Мрежни VLAN-ови**"
+
+#: ../../source/getting-started/architecture.rst:13
+msgid "Dedicated VLAN per tenant for network isolation"
+msgstr "Сваки клијент добија одвојен VLAN за мрежну изолацију"
+
+#: ../../source/getting-started/architecture.rst:15
+msgid "**Layer 3: User Groups**"
+msgstr "**Слој 3: Корисничке групе**"
+
+#: ../../source/getting-started/architecture.rst:16
+msgid "Tenant-specific groups with restricted permissions"
+msgstr "Групе корисника по клијенту са ограниченим дозволама"
+
+#: ../../source/getting-started/architecture.rst:18
+msgid "**Layer 4: ACLs**"
+msgstr "**Слој 4: Дозволе (ACL-ови)**"
+
+#: ../../source/getting-started/architecture.rst:19
+msgid "Fine-grained access control per tenant"
+msgstr ""
+"Детаљна контрола приступа осигурава да корисници могу приступити "
+"само њиховим клијент ресурсима"
+
+#: ../../source/getting-started/architecture.rst:22
+msgid "Command Structure"
+msgstr "Структура команди"
+
+#: ../../source/getting-started/architecture.rst:24
+msgid "Git-style subcommands::"
+msgstr "Подкоманде у Git стилу::"
+
+#: ../../source/getting-started/architecture.rst:42
+msgid "Library Modules"
+msgstr "Модули библиотеке"
+
+#: ../../source/getting-started/architecture.rst:44
+msgid "18 modules organized by function:"
+msgstr "18 модула организованих по функцији:"
+
+#: ../../source/getting-started/architecture.rst:46
+msgid "**Core** (``lib/core/``) - Configuration, logging, validation"
+msgstr "**Централно** (``lib/core/``) - Конфигурација, логовање, валидација"
+
+#: ../../source/getting-started/architecture.rst:47
+msgid "**Proxmox** (``lib/proxmox/``) - API, pools, users, network"
+msgstr "**Proxmox модули** (``lib/proxmox/``) - API, Скупови ресурса, Корисници, Мрежа"
+
+#: ../../source/getting-started/architecture.rst:48
+msgid "**Tenant** (``lib/tenant/``) - Lifecycle operations"
+msgstr "**клијент модули** (``lib/клијент/``) - Операције животног циклуса"
+
+#: ../../source/getting-started/architecture.rst:49
+msgid "**Cluster** (``lib/cluster/``) - Multi-node sync"
+msgstr "**Cluster модули** (``lib/cluster/``) - Вишечворна синхронизација"
+
+#: ../../source/getting-started/architecture.rst:50
+msgid "**Utils** (``lib/utils/``) - Helpers"
+msgstr "**Utility модули** (``lib/utils/``) - Поноћне методе"
+
+#: ../../source/getting-started/architecture.rst:51
+msgid "**VyOS** (``lib/vyos/``) - Router integration"
+msgstr "**VyOS модули** (``lib/vyos/``) - Интеграција рутера"
+
+#: ../../source/getting-started/architecture.rst:54
+msgid "Troubleshooting"
+msgstr "Решавање проблема"
+
+#: ../../source/getting-started/architecture.rst:57
+msgid "Installation Issues"
+msgstr "Проблеми током инсталације"
+
+#: ../../source/getting-started/architecture.rst:59
+msgid "**Problem: pvesh not found**"
+msgstr "**Проблем: pvesh није пронађен**"
+
+#: ../../source/getting-started/architecture.rst:65
+msgid "**Solution:** Install on Proxmox VE node. ``pvesh`` is part of PVE."
+msgstr "**Решење:** Инсталирајте на Proxmox VE чвору. ``pvesh`` је део PVE."
+
+#: ../../source/getting-started/architecture.rst:67
+msgid "**Problem: Permission denied**"
+msgstr "**Проблем: Дозвола одбијена**"
+
+#: ../../source/getting-started/architecture.rst:73
+msgid "**Solution:** Run with ``sudo`` or as root."
+msgstr "**Решење:** Покрените са ``sudo`` или као root."
+
+#: ../../source/getting-started/architecture.rst:75
+msgid "**Problem: Cluster nodes unreachable**"
+msgstr "**Проблем: Чворови кластера недоступни**"
+
+#: ../../source/getting-started/architecture.rst:81
+msgid "**Solution:**"
+msgstr "**Решење:**"
+
+#: ../../source/getting-started/architecture.rst:83
+msgid "Check network connectivity"
+msgstr "Проверите мрежну конекцију"
+
+#: ../../source/getting-started/architecture.rst:84
+msgid "Verify SSH access: ``ssh node2``"
+msgstr "Верификујте SSH приступ: ``ssh node2``"
+
+#: ../../source/getting-started/architecture.rst:85
+msgid "Use ``--local-only`` to skip cluster sync"
+msgstr "Користите ``--local-only`` да прескочите синхронизацију кластера"
+
+#: ../../source/getting-started/architecture.rst:88
+msgid "Tenant Creation Issues"
+msgstr "Ток креирања клијента"
+
+#: ../../source/getting-started/architecture.rst:90
+msgid "**Problem: VLAN allocation failed**"
+msgstr "**Проблем: VLAN алокација неуспела**"
+
+#: ../../source/getting-started/architecture.rst:96
+msgid ""
+"**Solution:** Increase VLAN pool in "
+"``/usr/local/share/tenctl/config/tenant.conf``."
+msgstr ""
+"**Решење:** Повећајте VLAN pool у "
+"``/usr/local/share/tenctl/config/tenant.conf``."
+
+#: ../../source/getting-started/architecture.rst:98
+msgid "**Problem: Pool already exists**"
+msgstr "**Проблем: Pool већ постоји**"
+
+#: ../../source/getting-started/architecture.rst:104
+msgid "**Solution:** Choose different tenant name or remove existing pool."
+msgstr "**Решење:** Изаберите другачије име клијента или уклоните постојећи pool."
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid ""
+#~ "This page provides a high-level "
+#~ "overview of the Tenctl - Multi-"
+#~ "Tenant управљање for Proxmox VE "
+#~ "architecture."
+#~ msgstr ""
+#~ "Ова страница пружа преглед на високом"
+#~ " нивоу архитектуре Tenctl - Више-клијентски алат"
+#~ " управљање Proxmox VE окружења."
+
+#~ msgid "Design Principles"
+#~ msgstr "Принципи дизајна"
+
+#~ msgid "The system is built on these core principles:"
+#~ msgstr "Систем је изграђен на овим основним принципима:"
+
+#~ msgid "**Simplicity**"
+#~ msgstr "**Једноставност**"
+
+#~ msgid ""
+#~ "Pure Bash implementation with minimal "
+#~ "dependencies. No complex frameworks or "
+#~ "runtimes needed."
+#~ msgstr ""
+#~ "Имплементација у чистом Bash-у са "
+#~ "минималним зависностима. Нису потребни сложени"
+#~ " framework-ци."
+
+#~ msgid "**Modularity**"
+#~ msgstr "**Модуларност**"
+
+#~ msgid ""
+#~ "Git-style command structure with 18 "
+#~ "independent library modules. Each module "
+#~ "has a single, well-defined "
+#~ "responsibility."
+#~ msgstr ""
+#~ "Структура команди у Git стилу са "
+#~ "18 независних модула библиотеке. Сваки "
+#~ "модул има једну, добро дефинисану "
+#~ "одговорност."
+
+#~ msgid "**Reliability**"
+#~ msgstr "**Поузданост**"
+
+#~ msgid ""
+#~ "Extensive validation, error handling, and "
+#~ "rollback mechanisms ensure system consistency."
+#~ msgstr ""
+#~ "Детаљна валидација, руковање грешкама и "
+#~ "механизми поништавања осигуравају конзистентност "
+#~ "система."
+
+#~ msgid "**Transparency**"
+#~ msgstr "**Транспарентност**"
+
+#~ msgid ""
+#~ "All operations are logged. Audit trail"
+#~ " provides complete visibility into system"
+#~ " changes."
+#~ msgstr ""
+#~ "Све операције се логују. Ревизорска "
+#~ "путања пружа потпуну видљивост у промене"
+#~ " система."
+
+#~ msgid "System Components"
+#~ msgstr "Компоненте система"
+
+#~ msgid "CLI Layer"
+#~ msgstr "CLI слој"
+
+#~ msgid "14 standalone commands that users interact with::"
+#~ msgstr "14 самосталних команди са којима корисници интерагују::"
+
+#~ msgid ""
+#~ "Each command is a self-contained "
+#~ "executable that loads required modules "
+#~ "on demand."
+#~ msgstr ""
+#~ "Свака команда је самостална извршна "
+#~ "датотека која учитава потребне модуле на"
+#~ " захтев."
+
+#~ msgid "Module Loader"
+#~ msgstr "Учитавач модула"
+
+#~ msgid "The ``ptm-loader.sh`` provides:"
+#~ msgstr "``ptm-loader.sh`` пружа:"
+
+#~ msgid "**Lazy Loading**: Modules loaded only when needed"
+#~ msgstr "**Lazy Loading**: Модули се учитавају само када су потребни"
+
+#~ msgid "**Dependency Resolution**: Automatic loading of module dependencies"
+#~ msgstr "**Разрешавање зависности**: Аутоматско учитавање зависности модула"
+
+#~ msgid "**Namespace управљање**: All functions prefixed with ``ptm_``"
+#~ msgstr "**Управљање namespace-ом**: Све функције су префиксоване са ``ptm_``"
+
+#~ msgid "**Error Handling**: Validation and safe failure"
+#~ msgstr "**Руковање грешкама**: Валидација и безбедан неуспех"
+
+#~ msgid "**Core Modules** (``lib/core/``)"
+#~ msgstr "**Централни модули** (``lib/core/``)"
+
+#~ msgid "``config.sh`` - Configuration management"
+#~ msgstr "``config.sh`` - Управљање конфигурацијом"
+
+#~ msgid "``logging.sh`` - Logging and output"
+#~ msgstr "``logging.sh`` - Логовање и излаз"
+
+#~ msgid "``validation.sh`` - Input validation"
+#~ msgstr "``validation.sh`` - Валидација улаза"
+
+#~ msgid "``api.sh`` - Proxmox API wrapper"
+#~ msgstr "``api.sh`` - Proxmox API wrapper"
+
+#~ msgid "``network.sh`` - Network/VLAN management"
+#~ msgstr "``network.sh`` - Управљање мрежом/VLAN-ом"
+
+#~ msgid "``pools.sh`` - Resource pool operations"
+#~ msgstr "``pools.sh`` - Resource pool операције"
+
+#~ msgid "``users.sh`` - User and group management"
+#~ msgstr "``users.sh`` - Управљање корисницима и групама"
+
+#~ msgid "``create.sh`` - Tenant creation logic"
+#~ msgstr "``create.sh`` - Логика креирања клијента"
+
+#~ msgid "``lifecycle.sh`` - Suspend, resume, remove"
+#~ msgstr "``lifecycle.sh`` - Suspend, resume, remove"
+
+#~ msgid "``state.sh`` - State management"
+#~ msgstr "``state.sh`` - Управљање стањем"
+
+#~ msgid "``sync.sh`` - Multi-node synchronization"
+#~ msgstr "``sync.sh`` - Синхронизација Вишечворног кластера"
+
+#~ msgid "``helpers.sh`` - Common helper functions"
+#~ msgstr "``helpers.sh`` - Уобичајене помоћне функције"
+
+#~ msgid "``config.sh`` - VyOS router integration"
+#~ msgstr "``config.sh`` - VyOS рутер интеграција"
+
+#~ msgid "Data Flow"
+#~ msgstr "Ток података"
+
+#~ msgid "Cluster синхронизација"
+#~ msgstr "Синхронизација кластера"
+
+#~ msgid ""
+#~ "Configuration is automatically synchronized "
+#~ "across cluster via Proxmox's ``pmxcfs`` "
+#~ "clustered filesystem."
+#~ msgstr ""
+#~ "Конфигурација се аутоматски синхронизује широм"
+#~ " кластера преко Proxmox-овог ``pmxcfs`` "
+#~ "кластерованог фајл система."
+
+#~ msgid "Storage Architecture"
+#~ msgstr "Архитектура складишта"
+
+#~ msgid "Configuration Storage"
+#~ msgstr "Складиште конфигурације"
+
+#~ msgid ""
+#~ "Tenant configuration is stored in "
+#~ "Proxmox's clustered configuration filesystem:"
+#~ msgstr ""
+#~ "Конфигурација клијента је похрањена у "
+#~ "Proxmox-овом кластерованом конфигурационом фајл "
+#~ "систему:"
+
+#~ msgid "**Location**: ``/etc/pve/tenctl/``"
+#~ msgstr "**Локација**: ``/etc/pve/tenctl/``"
+
+#~ msgid "**Format**: JSON files per tenant"
+#~ msgstr "**Формат**: JSON фајлови по клијенту"
+
+#~ msgid "**синхронизација**: Automatic via pmxcfs to all cluster nodes"
+#~ msgstr "**Синхронизација**: Аутоматска преко pmxcfs на све кластер čvorove"
+
+#~ msgid "**Backup**: Regular snapshots and export capabilities"
+#~ msgstr "**Резервна копија**: Редовни снимци и могућности извоза"
+
+#~ msgid "Configuration File"
+#~ msgstr "Конфигурациони фајл"
+
+#~ msgid "Network Architecture"
+#~ msgstr "Мрежна архитектура"
+
+#~ msgid "VLANs are allocated from a configurable pool:"
+#~ msgstr "VLAN-ови се алоцирају из конфигурабилног pool-а:"
+
+
+
+#~ msgid "Allocation: Sequential, first available"
+#~ msgstr "Алокација: Секвенцијална, први доступан"
+
+#~ msgid "Release: Automatic on tenant removal"
+#~ msgstr "Ослобађање: Аутоматско при уклањању клијента"
+
+#~ msgid "Subnet Assignment"
+#~ msgstr "Додела подмреже"
+
+#~ msgid "Subnets are carved from a base network:"
+#~ msgstr "Подмреже се исецају из основне мреже:"
+
+
+
+#~ msgid "Per-tenant: 10.100.X.0/24 where X is VLAN - 100"
+#~ msgstr "По клијенту: 10.100.X.0/24 где је X VLAN - 100"
+
+#~ msgid "Example:"
+#~ msgstr "Пример:"
+
+#~ msgid "Tenant 1: VLAN 100 → 10.100.0.0/24"
+#~ msgstr "клијент 1: VLAN 100 → 10.100.0.0/24"
+
+#~ msgid "Tenant 2: VLAN 101 → 10.100.1.0/24"
+#~ msgstr "клијент 2: VLAN 101 → 10.100.1.0/24"
+
+#~ msgid "Tenant 3: VLAN 102 → 10.100.2.0/24"
+#~ msgstr "клијент 3: VLAN 102 → 10.100.2.0/24"
+
+#~ msgid "SDN Integration"
+#~ msgstr "SDN интеграција"
+
+#~ msgid "Supports Proxmox SDN zones:"
+#~ msgstr "Подржава Proxmox SDN зоне:"
+
+#~ msgid "**VLAN Zone**: Traditional VLAN tagging"
+#~ msgstr "**VLAN зона**: Традиционално VLAN означавање"
+
+#~ msgid "**VXLAN Zone**: VXLAN overlay networks"
+#~ msgstr "**VXLAN зона**: VXLAN overlay мреже"
+
+#~ msgid "**Simple Zone**: Untagged networks"
+#~ msgstr "**Simple зона**: Неозначене мреже"
+
+#~ msgid "Error Handling"
+#~ msgstr "Руковање грешкама"
+
+#~ msgid "Validation Layers"
+#~ msgstr "Слојеви валидације"
+
+#~ msgid "**Input Validation**"
+#~ msgstr "**Валидација улаза**"
+
+#~ msgid "All user inputs validated before processing:"
+#~ msgstr "Сви кориснички улази валидирани пре обраде:"
+
+
+#~ msgid "Resource values: positive integers"
+#~ msgstr "Вредности ресурса: позитивни целобројни"
+
+#~ msgid "Email format: RFC 5322 validation"
+#~ msgstr "Email формат: RFC 5322 валидација"
+
+#~ msgid "System state checked before operations:"
+#~ msgstr "Стање система проверено пре операција:"
+
+#~ msgid "VLAN availability"
+#~ msgstr "VLAN доступност"
+
+#~ msgid "Resource pool conflicts"
+#~ msgstr "Конфликти pool ресурсаа"
+
+#~ msgid "User group existence"
+#~ msgstr "Постојање корисничке групе"
+
+#~ msgid "**API Validation**"
+#~ msgstr "**API валидација**"
+
+#~ msgid "Proxmox API responses validated for success"
+#~ msgstr "Proxmox API одговори валидирани за успех"
+
+#~ msgid "Rollback Mechanism"
+#~ msgstr "Механизам поништавања"
+
+#~ msgid "Failed operations automatically rollback:"
+#~ msgstr "Неуспеле операције се аутоматски поништавају:"
+
+#~ msgid "Track created resources"
+#~ msgstr "Прати креиране ресурсе"
+
+#~ msgid "On error, reverse operations in order"
+#~ msgstr "При грешци, обрће операције по редоследу"
+
+#~ msgid "Log rollback actions"
+#~ msgstr "Логује акције поништавања"
+
+#~ msgid "Report failure to user"
+#~ msgstr "Пријављује неуспех кориснику"
+
+#~ msgid ""
+#~ "Example: If user group creation fails"
+#~ " during tenant creation, the system "
+#~ "automatically removes the already-created "
+#~ "resource pool."
+#~ msgstr ""
+#~ "Пример: Ако креирање корисничке групе не"
+#~ " успе током креирања клијента,"
+#~ " систем аутоматски уклања већ креирани "
+#~ "resource pool."
+
+#~ msgid "Logging and Audit"
+#~ msgstr "Логовање и ревизија"
+
+#~ msgid "All operations logged at multiple levels:"
+#~ msgstr "Све операције логоване на више нивоа:"
+
+#~ msgid "**System Log**"
+#~ msgstr "**Системски лог**"
+
+#~ msgid "Standard syslog for operational messages"
+#~ msgstr "Стандардни syslog за оперативне поруке"
+
+#~ msgid "**Audit Log**"
+#~ msgstr "**Ревизорски лог**"
+
+#~ msgid "Dedicated audit trail per tenant:"
+#~ msgstr "Посвећена ревизорска путања по клијенту:"
+
+#~ msgid "Who performed the action"
+#~ msgstr "Ко је извршио акцију"
+
+#~ msgid "What changed"
+#~ msgstr "Шта се променило"
+
+#~ msgid "When it occurred"
+#~ msgstr "Када се догодило"
+
+#~ msgid "Success or failure"
+#~ msgstr "Успех или неуспех"
+
+#~ msgid "**Debug Log**"
+#~ msgstr "**Debug лог**"
+
+#~ msgid "Detailed execution trace for troubleshooting"
+#~ msgstr "Детаљан траг извршавања за решавање проблема"
+
+#~ msgid "See :doc:`../user-guide/monitoring` for details on accessing logs."
+#~ msgstr ""
+#~ "Погледајте :doc:`../user-guide/monitoring` за "
+#~ "детаље о приступању логовима."
+
+#~ msgid "Security Model"
+#~ msgstr "Модел безбедности"
+
+#~ msgid "Principle of Least Privilege"
+#~ msgstr "Принцип најмањих привилегија"
+
+#~ msgid "Tenant users receive minimal permissions:"
+#~ msgstr "клијент корисници добијају минималне дозволе:"
+
+#~ msgid "**Pool**: Read/write only to their pool"
+#~ msgstr "**Pool**: Читање/писање само у њихов pool"
+
+#~ msgid "**VMs**: Only VMs in their pool"
+#~ msgstr "**VM-ови**: Само VM-ови у њиховом pool-у"
+
+#~ msgid "**Network**: No access to network configuration"
+#~ msgstr "**Умрежавање**: Нема приступа мрежној конфигурацији"
+
+#~ msgid "**Users**: Cannot create/modify users"
+#~ msgstr "**Корисници**: Не могу креирати/мењати кориснике"
+
+#~ msgid "Root Operations"
+#~ msgstr "Root операције"
+
+#~ msgid "Tenant management commands require root:"
+#~ msgstr "Команде управљања клијент-ом захтевају root:"
+
+#~ msgid "Creating/removing tenants"
+#~ msgstr "Креирање/уклањање клијента"
+
+#~ msgid "Modifying resource limits"
+#~ msgstr "Мењање ограничења ресурса"
+
+#~ msgid "VyOS configuration changes"
+#~ msgstr "Промене VyOS конфигурације"
+
+#~ msgid "Credential Storage"
+#~ msgstr "Складиште креденцијала"
+
+#~ msgid "API keys stored with restricted permissions"
+#~ msgstr "API кључеви складиштени са ограниченим дозволама"
+
+#~ msgid "VyOS credentials in protected config files"
+#~ msgstr "VyOS креденцијали у заштићеним конфигурационим фајловима"
+
+#~ msgid "No plaintext passwords in logs"
+#~ msgstr "Нема лозинки у обичном тексту у логовима"
+
+#~ msgid "Performance Considerations"
+#~ msgstr "Разматрања перформанси"
+
+#~ msgid "**Lazy Module Loading**"
+#~ msgstr "**Лењо учитавање модула**"
+
+#~ msgid "Only required modules loaded per command, reducing memory footprint"
+#~ msgstr "Само потребни модули учитавани по команди, смањујући меморијски отисак"
+
+#~ msgid "**Parallel Operations**"
+#~ msgstr "**Паралелне операције**"
+
+#~ msgid "Independent operations executed in parallel where possible"
+#~ msgstr "Независне операције извршавају се паралелно где је могуће"
+
+#~ msgid "**Caching**"
+#~ msgstr "**Кеширање**"
+
+#~ msgid "API responses cached for common queries"
+#~ msgstr "API одговори кеширани за уобичајене упите"
+
+#~ msgid "**Cluster Sync**"
+#~ msgstr "**Синхронизација кластера**"
+
+#~ msgid "Configuration synchronized efficiently via pmxcfs"
+#~ msgstr "Конфигурација синхронизована ефикасно преко pmxcfs"
+
+#~ msgid "Scalability"
+#~ msgstr "Скалабилност"
+
+#~ msgid "**Tenant Limits**"
+#~ msgstr "**Ограничења клијента**"
+
+#~ msgid "VLANs: Limited by VLAN pool size (configurable, typically 100-4094)"
+#~ msgstr ""
+#~ "VLAN-ови: Ограничени величином VLAN pool-а "
+#~ "(конфигурабилно, типично 100-4094)"
+
+
+#~ msgid "Per-node resources: Limited by Proxmox capacity"
+#~ msgstr "Ресурси по čvoru: Ограничени Proxmox капацитетом"
+
+#~ msgid "**Cluster Support**"
+#~ msgstr "**Подршка кластера**"
+
+
+#~ msgid "No architectural limit on cluster size"
+#~ msgstr "Нема архитектонског ограничења на величину кластера"
+
+#~ msgid "Configuration synchronized automatically"
+#~ msgstr "Конфигурација синхронизована аутоматски"
+
+#~ msgid "Extension Points"
+#~ msgstr "Тачке проширења"
+
+#~ msgid "The system is designed for extensibility:"
+#~ msgstr "Систем је дизајниран за проширивост:"
+
+#~ msgid "**Custom Commands**"
+#~ msgstr "**Прилагођене команде**"
+
+#~ msgid "Add new commands following the ``tenctl-*`` pattern"
+#~ msgstr "Додајте нове команде пратећи ``tenctl-*`` образац"
+
+#~ msgid "**Module Extensions**"
+#~ msgstr "**Проширења модула**"
+
+#~ msgid "Add modules in ``lib/custom/`` for specialized functionality"
+#~ msgstr "Додајте модуле у ``lib/custom/`` за специјализовану функционалност"
+
+#~ msgid "**Hooks**"
+#~ msgstr "**Hook-ови**"
+
+#~ msgid "Pre/post operation hooks for custom logic"
+#~ msgstr "Pre/post операцијски hook-ови за прилагођену логику"
+
+#~ msgid "**API Extensions**"
+#~ msgstr "**API проширења**"
+
+#~ msgid "Wrap additional Proxmox API calls as needed"
+#~ msgstr "Обмотајте додатне Proxmox API позиве по потреби"
+
+#~ msgid "See :doc:`../developer-guide/extending` for details."
+#~ msgstr "Погледајте :doc:`../developer-guide/extending` за детаље."
+
+#~ msgid "Next Steps"
+#~ msgstr "Следећи кораци"
+
+#~ msgid ""
+#~ ":doc:`../architecture/isolation-model` - Detailed"
+#~ " isolation architecture"
+#~ msgstr ":doc:`../architecture/isolation-model` - Детаљна архитектура изолације"
+
+#~ msgid ":doc:`../architecture/network-design` - Network architecture deep dive"
+#~ msgstr ""
+#~ ":doc:`../architecture/network-design` - Дубоко "
+#~ "зарањање у мрежну архитектуру"
+
+#~ msgid ":doc:`../developer-guide/module-system` - Module system internals"
+#~ msgstr ":doc:`../developer-guide/module-system` - Интерни систем модула"
+
+#~ msgid ":doc:`../developer-guide/architecture` - Complete technical reference"
+#~ msgstr ":doc:`../developer-guide/architecture` - Потпуна техничка референца"
+
+#~ msgid "Proxmox resource pools with CPU, RAM, and storage quotas"
+#~ msgstr ""
+#~ "Proxmox skup resursa-ови пружају квоте "
+#~ "ресурса (CPU, RAM, складиште на PVE "
+#~ "9.0+)"

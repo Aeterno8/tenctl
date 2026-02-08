@@ -1,0 +1,18 @@
+# Sphinx Documentation Requirements
+# For Proxmox Multi-Tenant Management System
+
+# Core Sphinx
+sphinx>=7.2.0
+sphinx-rtd-theme>=2.0.0
+
+# Extensions
+sphinx-copybutton>=0.5.2
+sphinx-inline-tabs>=2023.4.21
+sphinx-design>=0.5.0
+sphinxcontrib-mermaid>=0.9.2
+
+# Internationalization
+sphinx-intl>=2.1.0
+
+# Additional tools for PDF generation
+# Note: Requires LaTeX installation on the system for PDF builds

@@ -1,0 +1,254 @@
+#!/bin/bash
+# Periodic audit script to detect tenant resource limit violations
+#
+# This script runs periodically (via cron) to audit all tenant resource pools
+# and detect VMs/containers that exceed their assigned limits.
+#
+# Usage: audit-tenant-resources [--auto-remediate] [--quiet]
+#
+# Options:
+#   --auto-remediate: Automatically stop VMs that exceed limits
+#   --quiet: Only log/alert on violations, suppress normal output
+#
+# Exit codes:
+#   0: Audit completed successfully (no violations or handled)
+#   1: Audit found violations (when not auto-remediating)
+
+set -euo pipefail
+
+AUTO_REMEDIATE=false
+QUIET_MODE=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --auto-remediate)
+            AUTO_REMEDIATE=true
+            shift
+            ;;
+        --quiet)
+            QUIET_MODE=true
+            shift
+            ;;
+        --help|-h)
+            grep '^#' "$0" | grep -v '#!/bin/bash' | sed 's/^# //' | sed 's/^#//'
+            exit 0
+            ;;
+        *)
+            echo "ERROR: Unknown option: $1" >&2
+            echo "Use --help for usage information" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ -f "/usr/local/share/tenctl/lib/common.sh" ]; then
+    source /usr/local/share/tenctl/lib/common.sh
+elif [ -f "/opt/proxmox-multitenant/lib/common.sh" ]; then
+    source /opt/proxmox-multitenant/lib/common.sh
+else
+    echo "ERROR: Tenant management library not found" >&2
+    exit 1
+fi
+
+output() {
+    if [ "$QUIET_MODE" = false ]; then
+        echo "$@"
+    fi
+}
+
+get_tenant_pools() {
+    pvesh get /pools --output-format json 2>/dev/null | \
+        jq -r '.[] | select(.poolid | startswith("tenant_")) | .poolid'
+}
+
+# Audit a single tenant pool
+# Args: pool_id
+# Returns: JSON with violation details or empty object
+audit_tenant_pool() {
+    local pool_id=$1
+    local tenant_name="${pool_id#tenant_}"
+
+    if ! load_tenant_config "$tenant_name" 2>/dev/null; then
+        log WARN "Could not load config for tenant $tenant_name, skipping"
+        echo "{}"
+        return
+    fi
+
+    local pool_resources
+    pool_resources=$(calculate_pool_resources "$pool_id")
+
+    local pool_cpu=$(echo "$pool_resources" | jq -r '.total_cpu // 0')
+    local pool_ram=$(echo "$pool_resources" | jq -r '.total_ram_mb // 0')
+    local pool_storage=$(echo "$pool_resources" | jq -r '.total_storage_gb // 0')
+
+    local violations=()
+
+    if [ "$pool_cpu" -gt "$CPU_LIMIT" ]; then
+        violations+=("CPU: ${pool_cpu}/${CPU_LIMIT} cores")
+    fi
+
+    if [ "$pool_ram" -gt "$RAM_LIMIT" ]; then
+        violations+=("RAM: ${pool_ram}/${RAM_LIMIT} MB")
+    fi
+
+    if [ "$pool_storage" -gt "$STORAGE_LIMIT" ]; then
+        violations+=("Storage: ${pool_storage}/${STORAGE_LIMIT} GB")
+    fi
+
+    if [ ${#violations[@]} -gt 0 ]; then
+        local violations_json=$(printf '%s\n' "${violations[@]}" | jq -R . | jq -s .)
+
+        jq -n \
+            --arg pool "$pool_id" \
+            --arg tenant "$tenant_name" \
+            --argjson cpu "$pool_cpu" \
+            --argjson ram "$pool_ram" \
+            --argjson storage "$pool_storage" \
+            --argjson cpu_limit "$CPU_LIMIT" \
+            --argjson ram_limit "$RAM_LIMIT" \
+            --argjson storage_limit "$STORAGE_LIMIT" \
+            --argjson violations "$violations_json" \
+            '{
+                pool: $pool,
+                tenant: $tenant,
+                usage: {cpu: $cpu, ram_mb: $ram, storage_gb: $storage},
+                limits: {cpu: $cpu_limit, ram_mb: $ram_limit, storage_gb: $storage_limit},
+                violations: $violations
+            }'
+    else
+        echo "{}"
+    fi
+}
+
+# Get VMs in a pool that are running
+# Args: pool_id
+# Returns: JSON array of VM IDs
+get_running_vms_in_pool() {
+    local pool_id=$1
+
+    pvesh get /pools/"$pool_id" --output-format json 2>/dev/null | \
+        jq -r '.members[] | select(.type == "qemu" or .type == "lxc") | select(.status == "running") | .vmid' | \
+        jq -R . | jq -s .
+}
+
+# Remediate a violation by stopping VMs
+# Args: pool_id, violation_json
+remediate_violation() {
+    local pool_id=$1
+    local violation_json=$2
+
+    local tenant=$(echo "$violation_json" | jq -r '.tenant')
+
+    log WARN "Auto-remediation: Stopping VMs in pool $pool_id to enforce limits"
+
+    local running_vms
+    running_vms=$(get_running_vms_in_pool "$pool_id")
+
+    local vm_count=$(echo "$running_vms" | jq 'length')
+
+    if [ "$vm_count" -eq 0 ]; then
+        log WARN "No running VMs to stop in pool $pool_id"
+        return
+    fi
+
+    output "Stopping $vm_count VMs in pool $pool_id..."
+
+    echo "$running_vms" | jq -r '.[]' | while read -r vmid; do
+        log INFO "Stopping VM/CT $vmid in pool $pool_id"
+
+        if pvesh get /nodes/pve/qemu/"$vmid"/status/current --output-format json &>/dev/null; then
+            qm stop "$vmid" 2>&1 | log INFO
+        elif pvesh get /nodes/pve/lxc/"$vmid"/status/current --output-format json &>/dev/null; then
+            pct stop "$vmid" 2>&1 | log INFO
+        else
+            log WARN "Could not determine type for VM/CT $vmid"
+        fi
+
+        local new_audit
+        new_audit=$(audit_tenant_pool "$pool_id")
+
+        if [ "$new_audit" = "{}" ]; then
+            log INFO "Violation resolved after stopping VM/CT $vmid"
+            break
+        fi
+    done
+}
+
+main() {
+    output "════════════════════════════════════════════════════════════════"
+    output "Tenant Resource Audit - $(date)"
+    output "════════════════════════════════════════════════════════════════"
+    output ""
+
+    local tenant_pools
+    tenant_pools=$(get_tenant_pools)
+
+    if [ -z "$tenant_pools" ]; then
+        output "No tenant pools found. Nothing to audit."
+        exit 0
+    fi
+
+    local pool_count=$(echo "$tenant_pools" | wc -l)
+    output "Auditing $pool_count tenant pools..."
+    output ""
+
+    local violation_count=0
+    local violations_report=()
+
+    while IFS= read -r pool_id; do
+        [ -z "$pool_id" ] && continue
+
+        local tenant_name="${pool_id#tenant_}"
+        output "Checking pool: $pool_id (tenant: $tenant_name)..."
+
+        local violation
+        violation=$(audit_tenant_pool "$pool_id")
+
+        if [ "$violation" != "{}" ]; then
+            violation_count=$((violation_count + 1))
+            violations_report+=("$violation")
+
+            local violations_list=$(echo "$violation" | jq -r '.violations | join(", ")')
+            log ERROR "VIOLATION: Tenant $tenant_name exceeds limits: $violations_list"
+
+            output "  ❌ VIOLATION DETECTED: $violations_list"
+
+            if [ "$AUTO_REMEDIATE" = true ]; then
+                remediate_violation "$pool_id" "$violation"
+            fi
+        else
+            output "  ✅ No violations"
+        fi
+    done <<< "$tenant_pools"
+
+    output ""
+    output "════════════════════════════════════════════════════════════════"
+    output "Audit Summary"
+    output "════════════════════════════════════════════════════════════════"
+    output "Total pools audited: $pool_count"
+    output "Violations found: $violation_count"
+
+    if [ "$violation_count" -gt 0 ]; then
+        output ""
+        output "⚠️  $violation_count tenant(s) exceed resource limits!"
+
+        if [ "$AUTO_REMEDIATE" = false ]; then
+            output ""
+            output "Actions to take:"
+            output "  1. Review violations in logs: /var/log/tenctl/tenant-management.log"
+            output "  2. Contact tenant administrators to reduce usage"
+            output "  3. Stop VMs manually if needed"
+            output "  4. Run with --auto-remediate to automatically stop VMs (use with caution!)"
+        fi
+
+        log ERROR "Audit completed with $violation_count violations"
+        exit 1
+    else
+        output ""
+        output "✅ All tenants are within their resource limits"
+        log INFO "Audit completed successfully, no violations found"
+        exit 0
+    fi
+}
+
+main

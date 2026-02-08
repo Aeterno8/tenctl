@@ -1,0 +1,207 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-07 15:30+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/user-guide/index.rst:2
+msgid "User Guide"
+msgstr "Кориснички водич"
+
+#: ../../source/user-guide/index.rst:4
+msgid "Complete guide to using Tenctl for tenant management."
+msgstr ""
+"Комплетан водич за коришћење Tenctl - Више-клијент управљање за Proxmox "
+"VE."
+
+#: ../../source/user-guide/index.rst:13
+msgid "Command Structure"
+msgstr "Команда Structure"
+
+#: ../../source/user-guide/index.rst:15
+msgid ""
+"Tenctl uses Git-style subcommands and can be invoked via the main "
+"entrypoint or standalone binaries::"
+msgstr ""
+
+#: ../../source/user-guide/index.rst:21
+msgid "Global Options"
+msgstr "Глобалне опције"
+
+#: ../../source/user-guide/index.rst:23
+msgid ""
+"There are no universal flags supported by every subcommand. Common "
+"patterns:"
+msgstr ""
+
+#: ../../source/user-guide/index.rst:25
+msgid "``--help``"
+msgstr "``--help``"
+
+#: ../../source/user-guide/index.rst:26
+msgid "Display command help (supported by most commands)"
+msgstr ""
+
+#: ../../source/user-guide/index.rst:28
+msgid "``tenctl --version``"
+msgstr "``--version``"
+
+#: ../../source/user-guide/index.rst:29
+msgid "Show version information for the main entrypoint"
+msgstr "Прикажи информације о верзији"
+
+#: ../../source/user-guide/index.rst:31
+msgid "``--verbose``"
+msgstr "``-v, --verbose``"
+
+#: ../../source/user-guide/index.rst:32
+msgid ""
+"Enable verbose output on commands that support it (``-v`` is available "
+"for some commands like ``tenctl-health`` and ``tenctl-usage``)"
+msgstr ""
+
+#: ../../source/user-guide/index.rst:35
+msgid "Exit Codes"
+msgstr "Кодови за излаз"
+
+#: ../../source/user-guide/index.rst:37
+msgid "Exit codes are not standardized across all commands. In practice:"
+msgstr ""
+
+#: ../../source/user-guide/index.rst:39
+msgid "``0`` - Success"
+msgstr "``0`` - Успех"
+
+#: ../../source/user-guide/index.rst:40
+msgid "``1`` - General error (most failures)"
+msgstr "``1`` - Општа грешка"
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid "This guide covers all day-to-day operations for managing tenants."
+#~ msgstr ""
+#~ "Овај водич покрива све свакодневне "
+#~ "операције за управљање klijent (tenant)-има."
+
+#~ msgid "Quick Reference"
+#~ msgstr "Брза референца"
+
+#~ msgid "**Create Tenant**"
+#~ msgstr "**Креирање клијента**"
+
+#~ msgid "**List Tenants**"
+#~ msgstr "**Листа клијента**"
+
+#~ msgid "**Modify Tenant**"
+#~ msgstr "**Измена клијента**"
+
+#~ msgid "**Suspend/Resume**"
+#~ msgstr "**Суспендовање/Настављање**"
+
+#~ msgid "**Remove Tenant**"
+#~ msgstr "**Уклањање клијента**"
+
+#~ msgid "What You'll Learn"
+#~ msgstr "Шта ћете научити"
+
+#~ msgid ":doc:`cli-overview`"
+#~ msgstr ":doc:`cli-overview`"
+
+#~ msgid "CLI basics, command structure, and common options."
+#~ msgstr "Основе CLI-ја, структура команди и уобичајене опције."
+
+#~ msgid ":doc:`tenant-lifecycle`"
+#~ msgstr ":doc:`клијент-lifecycle`"
+
+#~ msgid "Complete tenant lifecycle: create, modify, suspend, resume, remove."
+#~ msgstr ""
+#~ "Комплетан животни циклус клијента: креирање,"
+#~ " измена, суспендовање, настављање, уклањање."
+
+#~ msgid ":doc:`networking`"
+#~ msgstr ":doc:`networking`"
+
+#~ msgid "VLAN allocation, subnet management, and VyOS integration."
+#~ msgstr "Алокација VLAN-ова, управљање подмрежама и VyOS интеграција."
+
+#~ msgid ":doc:`resource-management`"
+#~ msgstr ":doc:`resource-management`"
+
+#~ msgid "CPU, RAM, and storage quotas and enforcement."
+#~ msgstr "CPU, RAM и квоте складишта и њихово спровођење."
+
+#~ msgid ":doc:`backup-restore`"
+#~ msgstr ":doc:`rezervna kopija-vraćanje`"
+
+#~ msgid "Backup and restore tenant configurations."
+#~ msgstr "Резервна копија и враћање конфигурација клијента."
+
+#~ msgid ":doc:`monitoring`"
+#~ msgstr ":doc:`monitoring`"
+
+#~ msgid "Health checks, usage statistics, and audit logs."
+#~ msgstr "Провере здравља, статистика коришћења и ревизијски логови."
+
+#~ msgid ":doc:`examples`"
+#~ msgstr ":doc:`examples`"
+
+#~ msgid "Real-world scenarios and solutions."
+#~ msgstr "Сценарији из стварног света и решења."
+
+#~ msgid "Tenctl uses Git-style subcommands::"
+#~ msgstr "Tenctl користи Git-стил подкоманде::"
+
+#~ msgid "Display command help"
+#~ msgstr "Прикажи помоћ команде"
+
+#~ msgid "Enable verbose output"
+#~ msgstr "Омогући опширан излаз"
+
+#~ msgid "``-q, --quiet``"
+#~ msgstr "``-q, --quiet``"
+
+#~ msgid "Suppress non-essential output"
+#~ msgstr "Потисни неесенцијални излаз"
+
+#~ msgid "``2`` - Invalid arguments"
+#~ msgstr "``2`` - Неважећи аргументи"
+
+#~ msgid "``3`` - Resource not found"
+#~ msgstr "``3`` - Ресурс није пронађен"
+
+#~ msgid "``4`` - Permission denied"
+#~ msgstr "``4`` - Дозвола одбијена"
+

@@ -1,0 +1,9 @@
+# Local translator configuration
+# Copy this file to setup.local.cfg and fill in your details
+# setup.local.cfg is gitignored and won't be committed
+
+[translator]
+name = Your Name
+email = your.email@example.com
+language = Serbian
+language_code = sr

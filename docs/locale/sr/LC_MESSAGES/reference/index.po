@@ -1,0 +1,99 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-03 20:51+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/reference/index.rst:2
+msgid "Reference"
+msgstr "Референца"
+
+#: ../../source/reference/index.rst:4
+msgid "Complete reference documentation for Tenctl commands and error codes."
+msgstr "Комплетна референтна документација."
+
+#: ../../source/reference/index.rst:13
+msgid "Command Reference"
+msgstr "Референца"
+
+#: ../../source/reference/index.rst:15
+msgid ":doc:`cli-reference`"
+msgstr "Референца"
+
+#: ../../source/reference/index.rst:16
+msgid "Quick reference for all 14 CLI commands."
+msgstr "Брза референца за свих 14 CLI команди."
+
+#: ../../source/reference/index.rst:19
+msgid "Error Codes"
+msgstr "Кодови грешака"
+
+#: ../../source/reference/index.rst:21
+msgid ":doc:`error-codes`"
+msgstr ":doc:`error-codes`"
+
+#: ../../source/reference/index.rst:22
+msgid "Exit codes and error messages."
+msgstr "Излазни кодови и поруке о грешкама."
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-"
+#~ "клијент управљање System 1.0.2\n"
+#~ ""
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid "This section provides complete technical reference."
+#~ msgstr "Ова секција пружа комплетну техничку референцу."
+
+#~ msgid "What You'll Find"
+#~ msgstr "Шта ћете пронаћи"
+
+#~ msgid ":doc:`cli-commands`"
+#~ msgstr ":doc:`cli-commands`"
+
+#~ msgid "Complete CLI command reference (auto-generated)."
+#~ msgstr "Комплетна CLI референца команди (аутоматски генерисана)."
+
+#~ msgid ":doc:`configuration`"
+#~ msgstr ":doc:`configuration`"
+
+#~ msgid "Configuration file reference."
+#~ msgstr "Референца конфигурационих фајлова."
+
+#~ msgid ":doc:`modules/index`"
+#~ msgstr ":doc:`modules/index`"
+
+#~ msgid "Module and function reference (auto-generated)."
+#~ msgstr "Референца модула и функција (аутоматски генерисана)."
+

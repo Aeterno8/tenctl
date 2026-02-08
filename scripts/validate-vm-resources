@@ -1,0 +1,141 @@
+#!/bin/bash
+# Validates VM/container resources against tenant limits
+#
+# Usage: validate-vm-resources <VMID> <VMTYPE>
+#   VMID: VM or container ID
+#   VMTYPE: qemu (VM) or lxc (container)
+#
+# Exit codes:
+#   0: Validation passed (VM can start)
+#   1: Validation failed (VM exceeds limits, block startup)
+
+set -euo pipefail
+
+# Validate arguments
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    echo "ERROR: Usage: $0 <VMID> [VMTYPE]" >&2
+    exit 1
+fi
+
+VMID=$1
+VMTYPE=${2:-}
+
+# Source tenant management library
+if [ -f "/usr/local/share/tenctl/lib/common.sh" ]; then
+    source /usr/local/share/tenctl/lib/common.sh
+elif [ -f "/opt/proxmox-multitenant/lib/common.sh" ]; then
+    source /opt/proxmox-multitenant/lib/common.sh
+else
+    echo "WARNING: Tenant management library not found, validation skipped" >&2
+    exit 0 
+fi
+
+VM_POOL=$(get_vm_pool "$VMID" "$VMTYPE")
+
+if [ -z "$VM_POOL" ] || [[ ! "$VM_POOL" =~ ^tenant_ ]]; then
+    log DEBUG "VM $VMID not in tenant pool, skipping validation"
+    exit 0  # Allow
+fi
+
+TENANT_NAME="${VM_POOL#tenant_}"
+
+log DEBUG "Validating VM $VMID in tenant pool $VM_POOL (tenant: $TENANT_NAME)"
+
+if ! load_tenant_config "$TENANT_NAME" 2>/dev/null; then
+    log WARN "Could not load tenant config for $TENANT_NAME, skipping validation"
+    exit 0
+fi
+
+VM_RESOURCES=$(get_current_vm_resources "$VMID")
+VM_CPU=$(echo "$VM_RESOURCES" | jq -r '.cpu // 0')
+VM_RAM=$(echo "$VM_RESOURCES" | jq -r '.ram_mb // 0')
+VM_STORAGE=$(echo "$VM_RESOURCES" | jq -r '.storage_gb // 0')
+
+log DEBUG "VM $VMID resources: CPU=$VM_CPU, RAM=$VM_RAM MB, Storage=$VM_STORAGE GB"
+
+POOL_RESOURCES=$(calculate_pool_resources "$VM_POOL")
+POOL_CPU=$(echo "$POOL_RESOURCES" | jq -r '.total_cpu // 0')
+POOL_RAM=$(echo "$POOL_RESOURCES" | jq -r '.total_ram_mb // 0')
+POOL_STORAGE=$(echo "$POOL_RESOURCES" | jq -r '.total_storage_gb // 0')
+
+log DEBUG "Pool $VM_POOL total: CPU=$POOL_CPU, RAM=$POOL_RAM MB, Storage=$POOL_STORAGE GB"
+log DEBUG "Tenant $TENANT_NAME limits: CPU=$CPU_LIMIT, RAM=$RAM_LIMIT MB, Storage=$STORAGE_LIMIT GB"
+
+EXCEEDED=""
+EXCEEDED_TYPE=""
+
+if [ "$POOL_CPU" -gt "$CPU_LIMIT" ]; then
+    EXCEEDED="CPU: ${POOL_CPU} cores > ${CPU_LIMIT} limit"
+    EXCEEDED_TYPE="CPU"
+elif [ "$POOL_RAM" -gt "$RAM_LIMIT" ]; then
+    EXCEEDED="RAM: ${POOL_RAM} MB > ${RAM_LIMIT} limit"
+    EXCEEDED_TYPE="RAM"
+elif [ "$POOL_STORAGE" -gt "$STORAGE_LIMIT" ]; then
+    EXCEEDED="Storage: ${POOL_STORAGE} GB > ${STORAGE_LIMIT} limit"
+    EXCEEDED_TYPE="Storage"
+fi
+
+if [ -n "$EXCEEDED" ]; then
+    log WARN "Blocking VM $VMID startup: $EXCEEDED"
+
+    cat >&2 <<EOF
+
+════════════════════════════════════════════════════════════════
+❌ VM/CONTAINER STARTUP BLOCKED - RESOURCE LIMIT EXCEEDED
+════════════════════════════════════════════════════════════════
+
+VM/Container ID: $VMID
+Tenant: $TENANT_NAME
+Pool: $VM_POOL
+Resource Exceeded: $EXCEEDED_TYPE
+
+─────────────────────────────────────────────────────────────────
+Current Pool Usage (including this VM):
+─────────────────────────────────────────────────────────────────
+  CPU:     ${POOL_CPU} / ${CPU_LIMIT} cores
+  RAM:     ${POOL_RAM} / ${RAM_LIMIT} MB
+  Storage: ${POOL_STORAGE} / ${STORAGE_LIMIT} GB
+
+─────────────────────────────────────────────────────────────────
+This VM's Allocated Resources:
+─────────────────────────────────────────────────────────────────
+  CPU:     ${VM_CPU} cores
+  RAM:     ${VM_RAM} MB
+  Storage: ${VM_STORAGE} GB
+
+─────────────────────────────────────────────────────────────────
+📋 ACTION REQUIRED:
+─────────────────────────────────────────────────────────────────
+
+Option 1: Reduce this VM's resource allocation
+  - Via Web GUI: Edit VM configuration and reduce CPU/RAM/Storage
+  - Via CLI: qm set $VMID --cores N --memory M
+
+Option 2: Stop/delete other VMs in this tenant to free resources
+  - List tenant VMs: qm list | grep $VM_POOL
+  - Stop a VM: qm stop <VMID>
+  - Delete a VM: qm destroy <VMID> --purge
+
+Option 3: Contact administrator to increase tenant limits
+  - Request limit increase for tenant: $TENANT_NAME
+  - Current limits: ${CPU_LIMIT} cores, ${RAM_LIMIT} MB RAM, ${STORAGE_LIMIT} GB storage
+
+─────────────────────────────────────────────────────────────────
+ℹ️  NOTE:
+─────────────────────────────────────────────────────────────────
+This validation prevents VMs from starting when tenant resource
+limits are exceeded. You can still modify VM configuration while
+the VM is stopped.
+
+Resource limits are enforced to ensure fair resource allocation
+across all tenants and prevent resource exhaustion.
+
+════════════════════════════════════════════════════════════════
+
+EOF
+
+    exit 1
+fi
+
+log DEBUG "VM $VMID validation passed, allowing startup"
+exit 0

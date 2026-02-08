@@ -1,0 +1,114 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-03 20:51+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/admin-guide/index.rst:2
+msgid "Admin Guide"
+msgstr "Водич за администраторе"
+
+#: ../../source/admin-guide/index.rst:4
+msgid "Administrator guide for Tenctl configuration and operations."
+msgstr "Конфигурација кластера са више чворова и синхронизација."
+
+#: ../../source/admin-guide/index.rst:13
+msgid "Quick Reference"
+msgstr "Брза референца"
+
+#: ../../source/admin-guide/index.rst:15
+msgid "**Initialize System**"
+msgstr "**Иницијализуј систем**"
+
+#: ../../source/admin-guide/index.rst:21
+msgid "**View Configuration**"
+msgstr "**Прикажи конфигурацију**"
+
+#: ../../source/admin-guide/index.rst:27
+msgid "**Check All Tenants**"
+msgstr "**Провери све клијенте**"
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-"
+#~ "клијент управљање System 1.0.2\n"
+#~ ""
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid ""
+#~ "Administrator guide for the Tenctl - "
+#~ "Multi-Tenant управљање for Proxmox VE."
+#~ msgstr ""
+#~ "Водич за администраторе за Tenctl - "
+#~ "Multi-клијент управљање за "
+#~ "Proxmox VE."
+
+#~ msgid "This guide covers system administration tasks."
+#~ msgstr "Овај водич покрива задатке системске администрације."
+
+#~ msgid "What You'll Learn"
+#~ msgstr "Шта ћете научити"
+
+#~ msgid ":doc:`cluster-setup`"
+#~ msgstr ":doc:`cluster-setup`"
+
+#~ msgid ":doc:`configuration`"
+#~ msgstr ":doc:`configuration`"
+
+#~ msgid "Complete configuration reference for tenant.conf."
+#~ msgstr "Комплетна референца конфигурације за клијент.conf."
+
+#~ msgid ":doc:`security`"
+#~ msgstr ":doc:`security`"
+
+#~ msgid "Security best practices and ACL configuration."
+#~ msgstr "Најбоље праксе безбедности и конфигурација ACL-а."
+
+#~ msgid ":doc:`troubleshooting`"
+#~ msgstr ":doc:`troubleshooting`"
+
+#~ msgid "Common issues and solutions."
+#~ msgstr "Уобичајени проблеми и решења."
+
+#~ msgid ":doc:`performance`"
+#~ msgstr ":doc:`performance`"
+
+#~ msgid "Performance tuning and optimization."
+#~ msgstr "Подешавање и оптимизација перформанси."
+
+#~ msgid ":doc:`maintenance`"
+#~ msgstr ":doc:`maintenance`"
+
+#~ msgid "System maintenance, updates, and backups."
+#~ msgstr "Одржавање система, ажурирања и резервне копије."
+

@@ -1,0 +1,194 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+ptm_parse_verbosity_flags "$@"
+
+usage() {
+    cat << EOF
+Usage: $0 -n TENANT_NAME [OPTIONS]
+
+Suspend a tenant temporarily (disable access, optionally stop VMs).
+
+Required:
+  -n, --name TENANT_NAME      Name of the tenant to suspend
+
+Optional:
+  --stop-vms                  Stop all running VMs (default: leave running)
+  --reason REASON             Reason for suspension (logged)
+  -f, --force                 Skip confirmation prompt
+  --verbose                   Increase verbosity (INFO level, use twice for DEBUG)
+  -h, --help                  Show this help
+
+Examples:
+  $0 -n firma_a                           # Suspend tenant, keep VMs running
+  $0 -n firma_a --stop-vms                # Suspend and stop all VMs
+  $0 -n firma_a --reason "Payment overdue"
+
+What happens during suspension:
+  1. Tenant user account is disabled (cannot login)
+  2. Optionally: All VMs/containers are stopped
+  3. Tenant config is marked as SUSPENDED
+  4. Action is logged with reason
+
+Note: To resume tenant, use 'tenctl resume'
+
+EOF
+    exit 1
+}
+
+TENANT_NAME=""
+STOP_VMS=false
+SUSPEND_REASON="Manual suspension"
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -n|--name)
+            TENANT_NAME="$2"
+            shift 2
+            ;;
+        --stop-vms)
+            STOP_VMS=true
+            shift
+            ;;
+        --reason)
+            SUSPEND_REASON="$2"
+            shift 2
+            ;;
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        --verbose)
+            # Handled by ptm_parse_verbosity_flags
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+if [ -z "$TENANT_NAME" ]; then
+    echo "ERROR: Tenant name is required"
+    usage
+fi
+
+ptm_check_root
+ptm_check_requirements || exit 1
+
+ptm_validate_tenant_name "$TENANT_NAME" || exit 1
+
+if ! ptm_tenant_exists "$TENANT_NAME"; then
+    ptm_log ERROR "Tenant '$TENANT_NAME' does not exist"
+    exit 1
+fi
+
+if ! ptm_load_tenant_config "$TENANT_NAME"; then
+    ptm_log ERROR "Failed to load tenant configuration"
+    exit 1
+fi
+
+POOL_ID="tenant_${TENANT_NAME}"
+USER_ID="${USERNAME}@pve"
+
+if [ "${TENANT_STATUS:-ACTIVE}" = "SUSPENDED" ]; then
+    ptm_log WARN "Tenant '$TENANT_NAME' is already suspended"
+    exit 0
+fi
+
+ptm_log INFO "Tenant Suspension Plan"
+ptm_log INFO "Tenant: $TENANT_NAME"
+ptm_log INFO "User: $USER_ID"
+ptm_log INFO "Pool: $POOL_ID"
+ptm_log INFO "Reason: $SUSPEND_REASON"
+ptm_log INFO "Actions:"
+ptm_log INFO "  1. Disable user account ($USER_ID)"
+if [ "$STOP_VMS" = true ]; then
+    VM_COUNT=$(ptm_get_pool_vm_list "$POOL_ID" | wc -w)
+    ptm_log INFO "  2. Stop all VMs/containers ($VM_COUNT total)"
+    ptm_log INFO "  3. Mark tenant as SUSPENDED in config"
+else
+    ptm_log INFO "  2. Mark tenant as SUSPENDED in config"
+    ptm_log INFO "  3. VMs will remain running"
+fi
+
+if [ "$FORCE" = false ]; then
+    read -p "Continue with suspension? (yes/no): " confirm
+    if [ "$confirm" != "yes" ]; then
+        ptm_log INFO "Suspension cancelled"
+        exit 0
+    fi
+fi
+
+ptm_log INFO "Starting tenant suspension..."
+
+ptm_log INFO "Disabling user account: $USER_ID"
+if pvesh set "/access/users/${USER_ID}" --enable 0 2>/dev/null; then
+    ptm_log INFO "User account disabled successfully"
+else
+    ptm_log ERROR "Failed to disable user account"
+    ptm_log WARN "Continuing with suspension..."
+fi
+
+if [ "$STOP_VMS" = true ]; then
+    ptm_log INFO "Stopping all VMs/containers..."
+
+    VM_LIST=$(ptm_get_pool_vm_list "$POOL_ID")
+
+    STOPPED_COUNT=0
+    FAILED_COUNT=0
+
+    for vmid in $VM_LIST; do
+        VM_DATA=$(ptm_get_vm_metadata "$vmid")
+
+        if [ "$VM_DATA" = "{}" ]; then
+            continue
+        fi
+
+        ptm_parse_vm_metadata "$VM_DATA"
+
+        if [ "$VM_STATUS" != "running" ]; then
+            ptm_log INFO "  VM $vmid already stopped (status: $VM_STATUS)"
+            continue
+        fi
+
+        ptm_log INFO "  Stopping VM $vmid (type: $VM_TYPE, node: $VM_NODE)..."
+
+        if ptm_stop_vm "$vmid" "$VM_TYPE" "$VM_NODE"; then
+            STOPPED_COUNT=$((STOPPED_COUNT + 1))
+        else
+            FAILED_COUNT=$((FAILED_COUNT + 1))
+        fi
+    done
+
+    ptm_log INFO "VM stop summary: $STOPPED_COUNT stopped, $FAILED_COUNT failed"
+fi
+
+ptm_update_tenant_status "$TENANT_NAME" "SUSPENDED" \
+    "SUSPEND_REASON=\"${SUSPEND_REASON}\"" \
+    "SUSPEND_DATE=\"$(date "+%Y-%m-%d %H:%M:%S")\""
+
+ptm_log INFO "Tenant config updated with SUSPENDED status"
+
+ptm_log INFO "Tenant Suspension Complete!"
+ptm_log INFO "Tenant: $TENANT_NAME"
+ptm_log INFO "Status: SUSPENDED"
+ptm_log INFO "Reason: $SUSPEND_REASON"
+if [ "$STOP_VMS" = true ]; then
+    ptm_log INFO "VMs stopped: $STOPPED_COUNT"
+    [ "$FAILED_COUNT" -gt 0 ] && ptm_log WARN "VMs failed to stop: $FAILED_COUNT"
+fi
+ptm_log INFO "To resume tenant:"
+ptm_log INFO "  tenctl resume -n $TENANT_NAME"
+
+exit 0

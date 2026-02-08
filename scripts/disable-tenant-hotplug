@@ -1,0 +1,165 @@
+#!/bin/bash
+# Disable CPU/RAM hotplug for all VMs in tenant pools
+#
+# This script disables hotplug functionality for all VMs in tenant resource pools
+# to prevent users from bypassing resource limits via hotplug operations.
+#
+# Usage: disable-tenant-hotplug [--tenant <name>] [--dry-run]
+#
+# Options:
+#   --tenant <name>: Only process specific tenant (default: all tenants)
+#   --dry-run: Show what would be done without making changes
+#
+# Exit codes:
+#   0: Success
+#   1: Error
+
+set -euo pipefail
+
+TENANT_NAME=""
+DRY_RUN=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --tenant|-n)
+            TENANT_NAME="$2"
+            shift 2
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --help|-h)
+            grep '^#' "$0" | grep -v '#!/bin/bash' | sed 's/^# //' | sed 's/^#//'
+            exit 0
+            ;;
+        *)
+            echo "ERROR: Unknown option: $1" >&2
+            echo "Use --help for usage information" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ -f "/usr/local/share/tenctl/lib/common.sh" ]; then
+    source /usr/local/share/tenctl/lib/common.sh
+elif [ -f "/opt/proxmox-multitenant/lib/common.sh" ]; then
+    source /opt/proxmox-multitenant/lib/common.sh
+else
+    echo "ERROR: Tenant management library not found" >&2
+    exit 1
+fi
+
+get_target_pools() {
+    if [ -n "$TENANT_NAME" ]; then
+        # Specific tenant
+        echo "tenant_${TENANT_NAME}"
+    else
+        # All tenant pools
+        pvesh get /pools --output-format json 2>/dev/null | \
+            jq -r '.[] | select(.poolid | startswith("tenant_")) | .poolid'
+    fi
+}
+
+main() {
+    echo "════════════════════════════════════════════════════════════════"
+    echo "Disable Hotplug for Tenant VMs"
+    echo "════════════════════════════════════════════════════════════════"
+    echo ""
+
+    if [ "$DRY_RUN" = true ]; then
+        echo "⚠️  DRY RUN MODE - No changes will be made"
+        echo ""
+    fi
+
+    local pools
+    pools=$(get_target_pools)
+
+    if [ -z "$pools" ]; then
+        echo "No tenant pools found."
+        exit 0
+    fi
+
+    local pool_count=$(echo "$pools" | wc -l)
+    echo "Processing $pool_count tenant pool(s)..."
+    echo ""
+
+    local total_vms=0
+    local total_disabled=0
+    local total_failed=0
+
+    while IFS= read -r pool_id; do
+        [ -z "$pool_id" ] && continue
+
+        local tenant_name="${pool_id#tenant_}"
+        echo "Processing pool: $pool_id (tenant: $tenant_name)"
+
+        local vm_list
+        vm_list=$(get_pool_vm_list "$pool_id")
+
+        if [ -z "$vm_list" ]; then
+            echo "  No VMs in pool"
+            echo ""
+            continue
+        fi
+
+        local vm_count=$(echo "$vm_list" | wc -w)
+        echo "  Found $vm_count VM(s)"
+
+        for vmid in $vm_list; do
+            ((total_vms++))
+
+            local vm_data
+            vm_data=$(get_vm_metadata "$vmid")
+
+            if [ "$vm_data" = "{}" ]; then
+                echo "  VM $vmid: ❌ Failed to get metadata"
+                ((total_failed++))
+                continue
+            fi
+
+            local node
+            node=$(echo "$vm_data" | jq -r '.node // ""')
+
+            if [ -z "$node" ]; then
+                echo "  VM $vmid: ❌ Could not determine node"
+                ((total_failed++))
+                continue
+            fi
+
+            local vm_type
+            vm_type=$(echo "$vm_data" | jq -r '.type // "unknown"')
+
+            if [ "$DRY_RUN" = true ]; then
+                echo "  VM $vmid ($vm_type on $node): Would disable hotplug"
+                ((total_disabled++))
+            else
+                if disable_vm_hotplug "$vmid" "$node" 2>&1 | grep -q "Hotplug disabled"; then
+                    echo "  VM $vmid ($vm_type on $node): ✅ Hotplug disabled"
+                    ((total_disabled++))
+                else
+                    echo "  VM $vmid ($vm_type on $node): ⚠️  Warning or not applicable"
+                    ((total_disabled++))
+                fi
+            fi
+        done
+
+        echo ""
+    done <<< "$pools"
+
+    echo "════════════════════════════════════════════════════════════════"
+    echo "Summary"
+    echo "════════════════════════════════════════════════════════════════"
+    echo "Total VMs processed: $total_vms"
+    echo "Hotplug disabled: $total_disabled"
+    echo "Failed: $total_failed"
+    echo ""
+
+    if [ "$DRY_RUN" = true ]; then
+        echo "DRY RUN completed. Run without --dry-run to apply changes."
+    else
+        echo "✅ Hotplug configuration updated for all tenant VMs"
+    fi
+}
+
+main

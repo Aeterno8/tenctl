@@ -1,0 +1,86 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-03 20:53+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language: sr\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/user-guide/tenant-management/resources.rst:2
+msgid "Resource Management"
+msgstr "Ресурс Watcher"
+
+#: ../../source/user-guide/tenant-management/resources.rst:5
+msgid "Resource Pools"
+msgstr "Скупови ресурса"
+
+#: ../../source/user-guide/tenant-management/resources.rst:7
+msgid ""
+"Each tenant gets a dedicated Proxmox resource pool with defined limits "
+"for CPU, RAM, and storage."
+msgstr ""
+"Сваки клијент добија посвећен Proxmox скуп ресурса са дефинисаним "
+"лимитима за CPU, RAM и складиште."
+
+#: ../../source/user-guide/tenant-management/resources.rst:10
+msgid "Setting Limits"
+msgstr ""
+
+#: ../../source/user-guide/tenant-management/resources.rst:12
+msgid "During creation:"
+msgstr "Током креирања:"
+
+#: ../../source/user-guide/tenant-management/resources.rst:18
+msgid "After creation:"
+msgstr "После креирања:"
+
+#: ../../source/user-guide/tenant-management/resources.rst:25
+msgid "Monitoring Usage"
+msgstr "Надгледање Коришћење"
+
+#: ../../source/user-guide/tenant-management/resources.rst:27
+msgid "Check resource usage:"
+msgstr "Проверите коришћење ресурса:"
+
+#: ../../source/user-guide/tenant-management/resources.rst:33
+msgid "Output shows:"
+msgstr "Излаз shows:"
+
+#: ../../source/user-guide/tenant-management/resources.rst:48
+msgid "Resource Watcher"
+msgstr "Ресурс Watcher"
+
+#: ../../source/user-guide/tenant-management/resources.rst:50
+msgid ""
+"The ``tenctl-watcher`` systemd service continuously monitors tenant "
+"resource usage."
+msgstr ""
+"``tenctl-watcher`` systemd сервис континуирано надгледа коришћење ресурса"
+" клијента."
+
+#: ../../source/user-guide/tenant-management/resources.rst:52
+msgid "Check service status:"
+msgstr "Провери статус сервиса:"
+
+#: ../../source/user-guide/tenant-management/resources.rst:58
+msgid "View logs:"
+msgstr "Погледај логове:"
+
+#~ msgid "Resource управљање"
+#~ msgstr "Управљање ресурсима"
+

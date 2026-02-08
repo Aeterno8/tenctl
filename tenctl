@@ -1,0 +1,241 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+if [ -f "/usr/local/share/tenctl/VERSION" ]; then
+    VERSION=$(cat "/usr/local/share/tenctl/VERSION" 2>/dev/null || echo "unknown")
+    MODE="installed"
+    CMD_PREFIX="/usr/local/bin/tenctl"
+elif [ -f "${SCRIPT_DIR}/VERSION" ]; then
+    VERSION=$(cat "${SCRIPT_DIR}/VERSION" 2>/dev/null || echo "unknown")
+    MODE="development"
+    CMD_PREFIX="${SCRIPT_DIR}/tenctl"
+else
+    VERSION="unknown"
+    MODE="unknown"
+    CMD_PREFIX="${SCRIPT_DIR}/tenctl"
+fi
+
+usage() {
+    cat << 'EOF'
+Tenctl - Multi-Tenant Management for Proxmox VE (v2.0)
+
+Usage:
+  tenctl <command> [options]
+
+Commands:
+  init                Initialize Proxmox cluster for multi-tenant use
+  add                 Add a new tenant
+  modify              Modify tenant resource limits or configuration
+  remove              Remove a tenant
+  suspend             Temporarily suspend a tenant (disable access)
+  resume              Resume a suspended tenant (re-enable access)
+  backup              Backup tenant configuration and metadata
+  restore             Restore tenant from backup archive
+  list                List all tenants
+  show                Show detailed tenant information
+  usage               Show tenant resource usage statistics
+  audit               Generate audit reports from logs
+  health              Run system health checks and diagnostics
+  vyos                VyOS router management (install, configure, test, status)
+  cluster-status      Show cluster-wide CLI version status
+  update-cli          Update CLI to latest version from git repository
+  uninstall           Uninstall the CLI tool (with optional full cleanup)
+  version             Show version information
+  help                Show this help message
+
+Examples:
+  tenctl init
+  tenctl add -n firma_a -c 16 -r 32768 -s 1000
+  tenctl modify -n firma_a -c 32 -r 65536
+  tenctl list
+  tenctl show -n firma_a
+  tenctl remove -n firma_a
+
+For command-specific help:
+  tenctl <command> --help
+
+Architecture:
+  This is a Git-style CLI with standalone subcommands.
+  Each command is an independent executable that loads only required modules.
+
+EOF
+    exit 0
+}
+
+show_version() {
+    cat << EOF
+Tenctl - Multi-Tenant Management for Proxmox VE
+Version: ${VERSION}
+Mode: ${MODE}
+Architecture: Git-style (standalone subcommands)
+
+Dependencies:
+  pvesh:  $(command -v pvesh >/dev/null && echo "✓ installed" || echo "✗ missing")
+  jq:     $(command -v jq >/dev/null && echo "✓ installed" || echo "✗ missing")
+  flock:  $(command -v flock >/dev/null && echo "✓ installed" || echo "✗ missing")
+
+Subcommands:
+  $(ls -1 ${CMD_PREFIX}-* 2>/dev/null | wc -l) standalone commands available
+
+EOF
+    exit 0
+}
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    update-cli|upgrade|version|--version|-v|help|--help|-h|cluster-status|uninstall)
+        ;;
+    *)
+        if [ -f "/etc/pve/tenctl-cluster.json" ] && [ "$VERSION" != "unknown" ]; then
+            CLUSTER_VERSION=$(jq -r '.version // "unknown"' /etc/pve/tenctl-cluster.json 2>/dev/null || echo "unknown")
+            NODE_NAME=$(hostname)
+
+            if [ "$CLUSTER_VERSION" != "$VERSION" ] && [ "$CLUSTER_VERSION" != "unknown" ]; then
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+                echo "⚠  VERSION MISMATCH WARNING" >&2
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+                echo "This node ($NODE_NAME) is running version $VERSION" >&2
+                echo "Cluster expects version $CLUSTER_VERSION" >&2
+                echo "" >&2
+                echo "Run: tenctl update-cli to update this node" >&2
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+                echo "" >&2
+            fi
+        fi
+        ;;
+esac
+
+case "$COMMAND" in
+    init|initialize)
+        exec "${CMD_PREFIX}-init" "$@"
+        ;;
+
+    add|create)
+        exec "${CMD_PREFIX}-add" "$@"
+        ;;
+
+    modify|update|edit)
+        exec "${CMD_PREFIX}-modify" "$@"
+        ;;
+
+    remove|delete|rm)
+        exec "${CMD_PREFIX}-remove" "$@"
+        ;;
+
+    suspend|pause|disable)
+        exec "${CMD_PREFIX}-suspend" "$@"
+        ;;
+
+    resume|unpause|enable)
+        exec "${CMD_PREFIX}-resume" "$@"
+        ;;
+
+    backup|export)
+        exec "${CMD_PREFIX}-backup" "$@"
+        ;;
+
+    restore|import)
+        exec "${CMD_PREFIX}-restore" "$@"
+        ;;
+
+    list|ls)
+        exec "${CMD_PREFIX}-list" "$@"
+        ;;
+
+    show|info|get)
+        exec "${CMD_PREFIX}-list" -d "$@"
+        ;;
+
+    usage|stats|statistics)
+        exec "${CMD_PREFIX}-usage" "$@"
+        ;;
+
+    audit|log|logs|history)
+        exec "${CMD_PREFIX}-audit" "$@"
+        ;;
+
+    health|check|status)
+        exec "${CMD_PREFIX}-health" "$@"
+        ;;
+
+    cluster-status)
+        if [ -f "/etc/pve/tenctl-cluster.json" ]; then
+            cat /etc/pve/tenctl-cluster.json | jq -r '
+                "Cluster Version: \(.version // "unknown")",
+                "Last Updated: \(.lastUpdated // "unknown") by \(.updatedBy // "unknown")",
+                "",
+                "Node Status:"
+            '
+            cat /etc/pve/tenctl-cluster.json | jq -r '
+                .nodes | to_entries[] |
+                "  \(.key): \(.value.version) \(if .value.status == "ok" then "✓" else "⚠" end) (\(.value.status)) - \(.value.lastSeen)"
+            '
+        else
+            echo "ERROR: Cluster state file not found" >&2
+            exit 1
+        fi
+        exit 0
+        ;;
+
+    update-cli|upgrade)
+        if [ "$MODE" != "installed" ]; then
+            echo "ERROR: Update only works in installed mode" >&2
+            echo "Run from repository instead: cd /path/to/repo && git pull && ./install.sh" >&2
+            exit 1
+        fi
+
+        UPDATE_SCRIPT="/usr/local/share/tenctl/update.sh"
+        if [ ! -f "$UPDATE_SCRIPT" ]; then
+            echo "ERROR: Update script not found: ${UPDATE_SCRIPT}" >&2
+            exit 1
+        fi
+
+        exec "$UPDATE_SCRIPT" "$@"
+        ;;
+
+    uninstall|remove-cli)
+        if [ "$MODE" != "installed" ]; then
+            echo "WARNING: Running in development mode" >&2
+            echo "Uninstall command only works for installed systems" >&2
+            echo "Repository files can be manually deleted" >&2
+            exit 1
+        fi
+
+        UNINSTALL_SCRIPT="/usr/local/share/tenctl/uninstall.sh"
+        if [ ! -f "$UNINSTALL_SCRIPT" ]; then
+            echo "ERROR: Uninstall script not found" >&2
+            exit 1
+        fi
+
+        exec "$UNINSTALL_SCRIPT" "$@"
+        ;;
+
+    vyos)
+        exec "${CMD_PREFIX}-vyos" "$@"
+        ;;
+
+    version|--version|-v)
+        show_version
+        ;;
+
+    help|--help|-h)
+        usage
+        ;;
+
+    *)
+        echo "ERROR: Unknown command: $COMMAND" >&2
+        echo "" >&2
+        echo "Run 'tenctl help' for usage information" >&2
+        exit 1
+        ;;
+esac

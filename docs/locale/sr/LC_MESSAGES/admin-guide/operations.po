@@ -1,0 +1,351 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-07 14:30+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language: sr\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/admin-guide/operations.rst:2
+msgid "Operations"
+msgstr "Операције"
+
+#: ../../source/admin-guide/operations.rst:4
+msgid "Cluster setup, security, troubleshooting, performance, and maintenance."
+msgstr ""
+"Подешавање кластера, безбедност, решавање проблема, перформансе и "
+"одржавање."
+
+#: ../../source/admin-guide/operations.rst:7
+msgid "Cluster Setup"
+msgstr "Подешавање кластера"
+
+#: ../../source/admin-guide/operations.rst:10
+msgid "Prerequisites"
+msgstr "Предуслови"
+
+#: ../../source/admin-guide/operations.rst:12
+msgid "All nodes in Proxmox cluster"
+msgstr "Сви чворови у Proxmox кластеру"
+
+#: ../../source/admin-guide/operations.rst:13
+msgid "SSH access between nodes"
+msgstr "SSH приступ између чворова"
+
+#: ../../source/admin-guide/operations.rst:14
+msgid "Shared storage (optional but recommended)"
+msgstr "Дељено складиште (опционо али препоручено)"
+
+#: ../../source/admin-guide/operations.rst:17
+msgid "Installation"
+msgstr "Инсталација"
+
+#: ../../source/admin-guide/operations.rst:19
+msgid "Automatic cluster-wide installation:"
+msgstr "Аутоматска инсталација на целом кластеру:"
+
+#: ../../source/admin-guide/operations.rst:25
+msgid ""
+"The installer detects cluster nodes and can install on all online nodes "
+"(prompted unless ``-y`` is used)."
+msgstr ""
+
+#: ../../source/admin-guide/operations.rst:27
+msgid "Manual installation per node:"
+msgstr "Ручна инсталација по чвору:"
+
+#: ../../source/admin-guide/operations.rst:35
+msgid "Configuration Synchronization"
+msgstr "Верификација синхронизације:"
+
+#: ../../source/admin-guide/operations.rst:37
+msgid ""
+"Configuration is automatically synchronized via pmxcfs. All tenant "
+"configurations in ``/etc/pve/tenants/`` replicate to all nodes."
+msgstr ""
+"Конфигурација се аутоматски синхронизује преко pmxcfs. Све конфигурације "
+"клијената у ``/etc/pve/tenctl/`` се реплицирају на све чворове."
+
+#: ../../source/admin-guide/operations.rst:39
+msgid "Verify synchronization:"
+msgstr "Верификација синхронизације:"
+
+#: ../../source/admin-guide/operations.rst:46
+msgid "All nodes should show identical tenant lists."
+msgstr "Сви чворови би требало да приказују идентичне листе клијената."
+
+#: ../../source/admin-guide/operations.rst:49
+msgid "Security"
+msgstr "Безбедност"
+
+#: ../../source/admin-guide/operations.rst:52
+msgid "Principle of Least Privilege"
+msgstr "Принцип најмањих привилегија"
+
+#: ../../source/admin-guide/operations.rst:54
+msgid "Tenant users receive minimal permissions:"
+msgstr "Корисници клијента добијају минималне дозволе:"
+
+#: ../../source/admin-guide/operations.rst:56
+msgid "Access only to their resource pool"
+msgstr "Приступ само њиховом скупу ресурса"
+
+#: ../../source/admin-guide/operations.rst:57
+msgid "Cannot modify network configuration"
+msgstr "Не могу мењати мрежну конфигурацију"
+
+#: ../../source/admin-guide/operations.rst:58
+msgid "Cannot create users"
+msgstr "Не могу креирати кориснике"
+
+#: ../../source/admin-guide/operations.rst:59
+msgid "Cannot access other tenants"
+msgstr "Не могу приступити другим клијентима"
+
+#: ../../source/admin-guide/operations.rst:62
+#: ../../source/admin-guide/operations.rst:134
+#: ../../source/admin-guide/operations.rst:169
+msgid "Best Practices"
+msgstr "Најбоље праксе"
+
+#: ../../source/admin-guide/operations.rst:64
+msgid "**Regular Audits**"
+msgstr "**Редовни аудити**"
+
+#: ../../source/admin-guide/operations.rst:70
+msgid "**Credential Rotation**"
+msgstr "**Ротација акредитива**"
+
+#: ../../source/admin-guide/operations.rst:71
+msgid "Rotate VyOS and API credentials periodically."
+msgstr "Ротирајте VyOS и API акредитиве периодично."
+
+#: ../../source/admin-guide/operations.rst:73
+msgid "**Access Control**"
+msgstr "**Контрола приступа**"
+
+#: ../../source/admin-guide/operations.rst:74
+msgid "Use Proxmox's built-in 2FA for tenant users."
+msgstr "Користите уграђену 2FA Proxmox-а за кориснике клијента."
+
+#: ../../source/admin-guide/operations.rst:76
+msgid "**Network Isolation**"
+msgstr "**Мрежна изолација**"
+
+#: ../../source/admin-guide/operations.rst:77
+msgid "Ensure VLANs are properly configured on switches."
+msgstr "Осигурајте да су VLAN-ови правилно конфигурисани на свичевима."
+
+#: ../../source/admin-guide/operations.rst:80
+msgid "Troubleshooting"
+msgstr "Решавање проблема"
+
+#: ../../source/admin-guide/operations.rst:83
+msgid "Installation Issues"
+msgstr "Инсталација"
+
+#: ../../source/admin-guide/operations.rst:85
+msgid "**pvesh not found**"
+msgstr "**pvesh није пронађен**"
+
+#: ../../source/admin-guide/operations.rst:86
+msgid "Ensure you're on a Proxmox VE node."
+msgstr "Уверите се да сте на Proxmox VE чвору."
+
+#: ../../source/admin-guide/operations.rst:88
+msgid "**Permission denied**"
+msgstr "**Дозвола одбијена**"
+
+#: ../../source/admin-guide/operations.rst:89
+msgid "Run as root or with sudo."
+msgstr "Покрените као root или са sudo."
+
+#: ../../source/admin-guide/operations.rst:92
+msgid "Tenant Creation"
+msgstr "Креирање клијента"
+
+#: ../../source/admin-guide/operations.rst:94
+msgid "**No available VLANs**"
+msgstr "**Нема доступних VLAN-ова**"
+
+#: ../../source/admin-guide/operations.rst:95
+msgid ""
+"Increase VLAN pool range in "
+"``/usr/local/share/tenctl/config/tenant.conf``."
+msgstr "Повећајте опсег VLAN скупа у конфигурацији."
+
+#: ../../source/admin-guide/operations.rst:97
+msgid "**Failed to create resource pool**"
+msgstr "**Скупови ресурса**"
+
+#: ../../source/admin-guide/operations.rst:98
+msgid "Use a different tenant name or remove the existing pool."
+msgstr "Користите другачије име клијента или уклоните постојећи скуп."
+
+#: ../../source/admin-guide/operations.rst:101
+msgid "Network Issues"
+msgstr ""
+
+#: ../../source/admin-guide/operations.rst:103
+msgid "**VMs cannot communicate**"
+msgstr "**VM-ови не могу комуницирати**"
+
+#: ../../source/admin-guide/operations.rst:104
+msgid "Verify VLAN configuration on physical switches."
+msgstr "Верификујте VLAN конфигурацију на физичким свичевима."
+
+#: ../../source/admin-guide/operations.rst:106
+msgid "**No internet access**"
+msgstr "**Нема приступа интернету**"
+
+#: ../../source/admin-guide/operations.rst:107
+msgid "Check VyOS NAT rules and routing."
+msgstr "Проверите VyOS NAT правила и рутирање."
+
+#: ../../source/admin-guide/operations.rst:110
+msgid "Cluster Issues"
+msgstr "Подешавање кластера"
+
+#: ../../source/admin-guide/operations.rst:112
+msgid "**Configuration not syncing**"
+msgstr "**Конфигурација се не синхронизује**"
+
+#: ../../source/admin-guide/operations.rst:113
+msgid "Verify pmxcfs is running on all nodes."
+msgstr "Верификујте да је pmxcfs покренут на свим чворовима."
+
+#: ../../source/admin-guide/operations.rst:115
+msgid "**Nodes unreachable**"
+msgstr "**Чворови недоступни**"
+
+#: ../../source/admin-guide/operations.rst:116
+msgid "Check network connectivity and SSH access."
+msgstr "Проверите мрежну повезаност и SSH приступ."
+
+#: ../../source/admin-guide/operations.rst:119
+msgid "Performance"
+msgstr "Перформансе"
+
+#: ../../source/admin-guide/operations.rst:122
+msgid "Optimization Tips"
+msgstr "Савети за оптимизацију"
+
+#: ../../source/admin-guide/operations.rst:124
+msgid "**VLAN Allocation**"
+msgstr "**VLAN алокација**"
+
+#: ../../source/admin-guide/operations.rst:125
+msgid "Use smaller VLAN pools to reduce search time."
+msgstr "Користите мање VLAN скупове да смањите време претраге."
+
+#: ../../source/admin-guide/operations.rst:127
+msgid "**Resource Pools**"
+msgstr "**Скупови ресурса**"
+
+#: ../../source/admin-guide/operations.rst:128
+msgid "On Proxmox VE 9.0+, quotas are enforced efficiently."
+msgstr "На Proxmox VE 9.0+, квоте се ефикасно примењују."
+
+#: ../../source/admin-guide/operations.rst:130
+msgid "**Monitoring**"
+msgstr "**Надгледање**"
+
+#: ../../source/admin-guide/operations.rst:131
+msgid "Use ``tenctl-usage`` to identify resource-intensive tenants."
+msgstr ""
+"Користите ``tenctl-usage`` да идентификујете клијенте који захтевају "
+"много ресурса."
+
+#: ../../source/admin-guide/operations.rst:136
+msgid "Limit VLAN pool size"
+msgstr "Ограничите величину VLAN скупа"
+
+#: ../../source/admin-guide/operations.rst:137
+msgid "Regular cleanup of unused tenants"
+msgstr "Редовно чишћење неискоришћених клијената"
+
+#: ../../source/admin-guide/operations.rst:138
+msgid "Monitor cluster load"
+msgstr ""
+
+#: ../../source/admin-guide/operations.rst:141
+msgid "Maintenance"
+msgstr "Одржавање"
+
+#: ../../source/admin-guide/operations.rst:144
+msgid "System Updates"
+msgstr "Ажурирање система"
+
+#: ../../source/admin-guide/operations.rst:146
+msgid "Update Tenctl:"
+msgstr "Ажурирање Tenctl:"
+
+#: ../../source/admin-guide/operations.rst:153
+msgid "Configuration Backups"
+msgstr "Резервне копије конфигурације"
+
+#: ../../source/admin-guide/operations.rst:155
+msgid "Backup all tenant configurations:"
+msgstr "Правите резервне копије свих конфигурација клијената:"
+
+#: ../../source/admin-guide/operations.rst:164
+msgid "Log Management"
+msgstr ""
+
+#: ../../source/admin-guide/operations.rst:166
+msgid ""
+"Audit logs are written to ``/var/log/tenctl/tenant-management.log`` and "
+"rotated via ``/etc/logrotate.d/tenctl``."
+msgstr ""
+
+#: ../../source/admin-guide/operations.rst:171
+msgid "Weekly configuration backups"
+msgstr "Недељне резервне копије конфигурације"
+
+#: ../../source/admin-guide/operations.rst:172
+msgid "Monthly system updates"
+msgstr "Месечна ажурирања система"
+
+#: ../../source/admin-guide/operations.rst:173
+msgid "Quarterly audit reviews"
+msgstr "Квартални прегледи аудита"
+
+#~ msgid "The installer automatically detects and installs on all nodes."
+#~ msgstr "Инсталатор аутоматски детектује и инсталира на свим чворовима."
+
+#~ msgid "Configuration синхронизација"
+#~ msgstr "Синхронизација конфигурације"
+
+#~ msgid "Installation проблеми"
+#~ msgstr "Проблеми са инсталацијом"
+
+
+#~ msgid "Network проблеми"
+#~ msgstr "Мрежни проблеми"
+
+#~ msgid "Cluster проблеми"
+#~ msgstr "Проблеми кластера"
+
+#~ msgid "Monitor оптерећење кластера"
+#~ msgstr "Надгледајтете оптерећење кластера"
+
+#~ msgid "Log управљање"
+#~ msgstr "Управљање логовима"
+
+#~ msgid "Audit logs stored in syslog rotate automatically."
+#~ msgstr "Логови аудита који се чувају у syslog-у се аутоматски ротирају."
+

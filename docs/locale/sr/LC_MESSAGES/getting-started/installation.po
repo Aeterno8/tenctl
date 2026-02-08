@@ -1,0 +1,423 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/getting-started/installation.rst:2
+msgid "Installation"
+msgstr "Инсталација"
+
+#: ../../source/getting-started/installation.rst:5
+msgid "Prerequisites"
+msgstr "Предуслови"
+
+#: ../../source/getting-started/installation.rst:7
+msgid "Before installing, ensure you have:"
+msgstr "Пре инсталације, уверите се да имате:"
+
+#: ../../source/getting-started/installation.rst:9
+msgid "**System Requirements:**"
+msgstr "**Системски захтеви**"
+
+#: ../../source/getting-started/installation.rst:10
+msgid "Proxmox VE 9.0 or later"
+msgstr "Proxmox VE 9.0 или новији"
+
+#: ../../source/getting-started/installation.rst:11
+msgid "Root access"
+msgstr "Root приступ"
+
+#: ../../source/getting-started/installation.rst:13
+msgid "**Network Requirements:**"
+msgstr "**Мрежни захтеви**"
+
+#: ../../source/getting-started/installation.rst:14
+msgid "VLAN support on network infrastructure"
+msgstr "VLAN подршка на мрежној инфраструктури"
+
+#: ../../source/getting-started/installation.rst:15
+msgid "VyOS router (optional, for advanced networking)"
+msgstr "VyOS ruter (опционо, за напредно умрежавање)"
+
+#: ../../source/getting-started/installation.rst:18
+msgid "Method 1: Bootstrap Install (Recommended)"
+msgstr "Метод 1: Bootstrap инсталација (препоручено)"
+
+#: ../../source/getting-started/installation.rst:20
+msgid "One-liner installation from Git repository:"
+msgstr ""
+"**Bootstrap инсталација** (препоручено) - Инсталација једном линијом из "
+"Git репозиторијума"
+
+#: ../../source/getting-started/installation.rst:26
+msgid "This script will:"
+msgstr "Ова скрипта ће:"
+
+#: ../../source/getting-started/installation.rst:28
+msgid "Download latest version from Git"
+msgstr "Преузети најновију верзију са Gitа"
+
+#: ../../source/getting-started/installation.rst:29
+msgid "Install CLI entrypoints to ``/usr/local/bin/``"
+msgstr "Инсталирати у ``/usr/local/bin/``"
+
+#: ../../source/getting-started/installation.rst:30
+msgid "Copy core files to ``/usr/local/share/tenctl/``"
+msgstr "Копирати библиотеке у ``/usr/local/lib/tenctl/``"
+
+#: ../../source/getting-started/installation.rst:31
+msgid ""
+"Install default configuration to "
+"``/usr/local/share/tenctl/config/tenant.conf``"
+msgstr ""
+"Инсталирати подразумевану конфигурацију у "
+"``/usr/local/share/tenctl/config/tenant.conf``"
+
+#: ../../source/getting-started/installation.rst:32
+msgid "Offer cluster sync (prompted unless ``-y`` is used)"
+msgstr "Понудити синхронизацију кластера (уз потврду, осим ако се користи ``-y``)"
+
+#: ../../source/getting-started/installation.rst:34
+msgid "**Options:**"
+msgstr "**Опције**"
+
+#: ../../source/getting-started/installation.rst:45
+msgid "Method 2: Manual Installation"
+msgstr "Метод 2: Мануелна инсталација"
+
+#: ../../source/getting-started/installation.rst:47
+msgid "For more control:"
+msgstr "За више контроле:"
+
+#: ../../source/getting-started/installation.rst:49
+msgid "**Step 1: Clone the Repository**"
+msgstr "**Корак 1: Клонирајте репозиторијум**"
+
+#: ../../source/getting-started/installation.rst:57
+msgid "**Step 2: Run the Installer**"
+msgstr "**Корак 2: Покрените install.sh**"
+
+#: ../../source/getting-started/installation.rst:63
+msgid "**Step 3: Verify Installation**"
+msgstr "**Корак 3: Верификујте инсталацију**"
+
+#: ../../source/getting-started/installation.rst:70
+msgid "Method 3: Cluster Installation"
+msgstr "Метод 3: Кластер инсталација"
+
+#: ../../source/getting-started/installation.rst:72
+msgid "To deploy across all cluster nodes:"
+msgstr ""
+"**Кластер инсталација** - Аутоматска имплементација на свим кластер "
+"чворовима"
+
+#: ../../source/getting-started/installation.rst:74
+msgid "**Step 1: Install on First Node**"
+msgstr "**Корак 1: Инсталирајте на првом чвору**"
+
+#: ../../source/getting-started/installation.rst:80
+msgid "**Step 2: Automatic Cluster Sync**"
+msgstr "**Корак 2: Синхронизација кластера (аутоматска)**"
+
+#: ../../source/getting-started/installation.rst:82
+msgid ""
+"The installer detects cluster membership and installs on all nodes "
+"automatically:"
+msgstr ""
+"Подразумевано, инсталатер детектује чланство кластера и инсталира на свим"
+" нодовима. Видећете излаз као:"
+
+#: ../../source/getting-started/installation.rst:95
+msgid ""
+"In interactive mode, you will be prompted before installing on other "
+"nodes. Use ``-y`` for non-interactive auto-approval."
+msgstr ""
+
+#: ../../source/getting-started/installation.rst:98
+msgid "**Step 3: Verify on Each Node**"
+msgstr "**Корак 3: Верификујте инсталацију**"
+
+#: ../../source/getting-started/installation.rst:106
+msgid "Post-Installation Setup"
+msgstr "Подешавање после инсталације"
+
+#: ../../source/getting-started/installation.rst:109
+msgid "Initialize Configuration"
+msgstr "Инициализација конфигурације"
+
+#: ../../source/getting-started/installation.rst:111
+msgid "After installation, run the initialization wizard:"
+msgstr "После инсталације, иницијализујте конфигурацију система:"
+
+#: ../../source/getting-started/installation.rst:117
+msgid ""
+"This initializes SDN zones and cluster networking using settings from the"
+" config file. It uses:"
+msgstr ""
+"Ово иницијализује SDN зоне и кластерско умрежавање користећи подешавања из "
+"конфигурационог фајла. Користи:"
+
+#: ../../source/getting-started/installation.rst:119
+msgid "VLAN pool range (e.g., 100-200)"
+msgstr "VLAN опсег pool-а (нпр., 100-200)"
+
+#: ../../source/getting-started/installation.rst:120
+msgid "Subnet allocation (e.g., 10.100.0.0/16 derived from ``BASE_SUBNET``)"
+msgstr "Доделу подмреже (нпр., 10.100.0.0/16)"
+
+#: ../../source/getting-started/installation.rst:121
+msgid "Default resource limits for tenants"
+msgstr "Storage pool-е за клијент VM-ове"
+
+#: ../../source/getting-started/installation.rst:122
+msgid "VyOS router integration (optional)"
+msgstr "VyOS ruter интеграцију (опционо)"
+
+#: ../../source/getting-started/installation.rst:123
+msgid "Network SDN zone type"
+msgstr "Тип мрежне SDN зоне"
+
+#: ../../source/getting-started/installation.rst:125
+msgid "Review the configuration:"
+msgstr "**Корак 2: Прегледајте конфигурацију**"
+
+#: ../../source/getting-started/installation.rst:131
+msgid "You should see:"
+msgstr "Требало би да видите:"
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid ""
+#~ "This guide covers multiple installation "
+#~ "methods for the Tenctl - Multi-"
+#~ "Tenant управљање for Proxmox VE."
+#~ msgstr ""
+#~ "Овај водич покрива више метода "
+#~ "инсталације за Tenctl - Multi-klijent"
+#~ " (tenant) управљање за Proxmox VE."
+
+#~ msgid "Internet access for package downloads (during installation)"
+#~ msgstr "Интернет приступ за преузимање пакета (током инсталације)"
+
+#~ msgid "**Cluster Configuration**"
+#~ msgstr "**Конфигурација кластера**"
+
+#~ msgid "For single-node: No special requirements"
+#~ msgstr "За један čvor: Нема посебних захтева"
+
+#~ msgid "For multi-node clusters: All nodes must be configured and operational"
+#~ msgstr ""
+#~ "За вишенодне кластере: Сви čvorovi "
+#~ "морају бити конфигурисани и оперативни"
+
+#~ msgid "Installation Methods"
+#~ msgstr "Методе инсталације"
+
+#~ msgid "There are three ways to install the system:"
+#~ msgstr "Постоје три начина да инсталирате систем:"
+
+#~ msgid "**Manual Install** - Clone repository and run installer"
+#~ msgstr ""
+#~ "**Мануелна инсталација** - Клонирајте "
+#~ "репозиторијум и покрените инсталатер"
+
+#~ msgid "The bootstrap method is the fastest way to install on a single node:"
+#~ msgstr "Bootstrap метод је најбржи начин да инсталирате на једном чвору:"
+
+#~ msgid "You can pass options via environment variables:"
+#~ msgstr "Можете проследити опције преко променљивих окружења:"
+
+#~ msgid "For more control over the installation process:"
+#~ msgstr "За већу контролу над процесом инсталације:"
+
+#~ msgid "The installer will:"
+#~ msgstr "Инсталатер ће:"
+
+#~ msgid "Copy CLI commands to ``/usr/local/bin/``"
+#~ msgstr "Копирати CLI команде у ``/usr/local/bin/``"
+
+#~ msgid "Install library modules to ``/usr/local/lib/tenctl/``"
+#~ msgstr "Инсталирати модуле библиотеке у ``/usr/local/lib/tenctl/``"
+
+#~ msgid "Set up default ``tenant.conf`` configuration file"
+#~ msgstr "Подесити подразумевани ``клијент.conf`` конфигурациони фајл"
+
+#~ msgid "**Installer Options**"
+#~ msgstr "**Опције инсталатера**"
+
+#~ msgid "To deploy across all nodes in a Proxmox cluster automatically:"
+#~ msgstr "Да аутоматски имплементирате на свим чворовима у Proxmox кластеру:"
+
+#~ msgid "Use either bootstrap or manual method on one cluster node:"
+#~ msgstr "Користите bootstrap или мануелни метод на једном кластер чвору:"
+
+#~ msgid "**Step 3: Verify Cluster Installation**"
+#~ msgstr "**Корак 3: Верификујте кластер инсталацију**"
+
+#~ msgid "On each node, check the installation:"
+#~ msgstr "На сваком чвору, проверите инсталацију:"
+
+#~ msgid "**Manual Cluster Installation**"
+#~ msgstr "**Мануелна кластер инсталација**"
+
+#~ msgid "If automatic cluster installation fails, install manually on each node:"
+#~ msgstr ""
+#~ "Ако аутоматска кластер инсталација не "
+#~ "успе, инсталирајте мануелно на сваком "
+#~ "чвору:"
+
+#~ msgid "**Step 1: Run Initialization**"
+#~ msgstr "**Корак 1: Покрените иницијализацију**"
+
+
+#~ msgid "**Step 3: Test Installation**"
+#~ msgstr "**Корак 3: Тестирајте инсталацију**"
+
+#~ msgid "List existing tenants (should be empty):"
+#~ msgstr "Прикажите постојеће клијенте (требало би да буде празно):"
+
+#~ msgid "Directory Structure"
+#~ msgstr "Структура директоријума"
+
+#~ msgid "After installation, the following directories and files are created:"
+#~ msgstr "После инсталације, следећи директоријуми и фајлови се креирају:"
+
+#~ msgid "**Executables** (``/usr/local/bin/``)::"
+#~ msgstr "**Извршне датотеке** (``/usr/local/bin/``)::"
+
+#~ msgid "**Library Modules** (``/usr/local/lib/tenctl/``)::"
+#~ msgstr "**Модули библиотеке** (``/usr/local/lib/tenctl/``)::"
+
+
+#~ msgid "Upgrading"
+#~ msgstr "Надоградња"
+
+#~ msgid "To upgrade to the latest version:"
+#~ msgstr "Да надоградите на најновију верзију:"
+
+#~ msgid "**Method 1: Bootstrap Upgrade**"
+#~ msgstr "**Метод 1: Bootstrap надоградња**"
+
+#~ msgid "**Method 2: Manual Upgrade**"
+#~ msgstr "**Метод 2: Мануелна надоградња**"
+
+
+#~ msgid "Uninstallation"
+#~ msgstr "Деинсталација"
+
+#~ msgid "To remove the system:"
+#~ msgstr "Да уклоните систем:"
+
+#~ msgid "**Step 1: Remove All Tenants**"
+#~ msgstr "**Корак 1: Уклоните све клијенте**"
+
+#~ msgid "**Step 2: Remove Installation**"
+#~ msgstr "**Корак 2: Уклоните инсталацију**"
+
+#~ msgid "**Step 3: Clean Up Cluster (if applicable)**"
+#~ msgstr "**Корак 3: Очистите кластер (ако је применљиво)**"
+
+#~ msgid "Repeat Step 2 on all cluster nodes."
+#~ msgstr "Поновите Корак 2 на свим кластер чворовима."
+
+#~ msgid "Troubleshooting Installation"
+#~ msgstr "Решавање проблема са инсталацијом"
+
+#~ msgid "**Problem: pvesh not found**"
+#~ msgstr "**Проблем: pvesh није пронађен**"
+
+#~ msgid ""
+#~ "**Solution:** Ensure you're installing on "
+#~ "a Proxmox VE node. The ``pvesh`` "
+#~ "command is part of Proxmox VE."
+#~ msgstr ""
+#~ "**Решење:** Уверите се да инсталирате на"
+#~ " Proxmox VE чвору. ``pvesh`` команда "
+#~ "је део Proxmox VE."
+
+#~ msgid "**Problem: Permission denied**"
+#~ msgstr "**Проблем: Дозвола одбијена**"
+
+#~ msgid "**Solution:** Run the installer with ``sudo`` or as root user."
+#~ msgstr "**Решење:** Покрените инсталатер са ``sudo`` или као root korisnik."
+
+#~ msgid "**Problem: Cluster nodes unreachable**"
+#~ msgstr "**Проблем: Кластер čvorovi недоступни**"
+
+#~ msgid "**Solution:**"
+#~ msgstr "**Решење:**"
+
+#~ msgid "Check network connectivity between cluster nodes"
+#~ msgstr "Проверите мрежну повезаност између кластер нодова"
+
+#~ msgid "Verify SSH access: ``ssh node2``"
+#~ msgstr "Верификујте SSH приступ: ``ssh node2``"
+
+#~ msgid "Use ``--local-only`` flag to skip cluster installation"
+#~ msgstr "Користите ``--local-only`` заставицу да прескочите кластер инсталацију"
+
+#~ msgid "**Problem: Configuration file exists**"
+#~ msgstr "**Проблем: Конфигурациони фајл постоји**"
+
+#~ msgid "**Solution:** The installer preserves existing configuration. To reset:"
+#~ msgstr "**Решење:** Инсталатер чува постојећу конфигурацију. Да ресетујете:"
+
+#~ msgid "Next Steps"
+#~ msgstr "Следећи кораци"
+
+#~ msgid ":doc:`quickstart` - Create your first tenant"
+#~ msgstr ":doc:`quickstart` - Креирате свог првог клијента"
+
+#~ msgid ":doc:`../admin-guide/configuration` - Configure advanced settings"
+#~ msgstr ":doc:`../admin-guide/configuration` - Конфигуришите напредна подешавања"
+
+#~ msgid ":doc:`../user-guide/index` - Learn all commands and features"
+#~ msgstr ":doc:`../user-guide/index` - Научите све команде и карактеристике"
+
+#~ msgid "Debian-based operating system"
+#~ msgstr "Оперативни систем базиран на Debian-у"
+
+#~ msgid "Bash 4.0+"
+#~ msgstr "Bash 4.0+"
+
+
+#~ msgid "Set up default configuration"
+#~ msgstr "Подесити подразумевану конфигурацију"
+
+#~ msgid "This configures:"
+#~ msgstr "Ова интерактивна скрипта конфигурише:"

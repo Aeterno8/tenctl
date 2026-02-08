@@ -1,0 +1,193 @@
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+"Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+"POT-Creation-Date: 2026-02-07 16:21+0100\n"
+"PO-Revision-Date: 2026-02-03 21:23+0100\n"
+"Last-Translator: Aleksa Savić <savicaleksa.kg@gmail.com>\n"
+"Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/reference/error-codes.rst:2
+msgid "Error Codes"
+msgstr "Кодови грешака"
+
+#: ../../source/reference/error-codes.rst:4
+msgid "Exit codes and error messages."
+msgstr "Излазни кодови и поруке о грешкама."
+
+#: ../../source/reference/error-codes.rst:7
+msgid "Exit Codes"
+msgstr "Излазни кодови"
+
+#: ../../source/reference/error-codes.rst:9
+msgid "Exit codes vary by command. In practice:"
+msgstr ""
+
+#: ../../source/reference/error-codes.rst:15
+msgid "Code"
+msgstr "Код"
+
+#: ../../source/reference/error-codes.rst:16
+msgid "Description"
+msgstr "Опис"
+
+#: ../../source/reference/error-codes.rst:17
+msgid "0"
+msgstr "0"
+
+#: ../../source/reference/error-codes.rst:18
+msgid "Success"
+msgstr "Успех"
+
+#: ../../source/reference/error-codes.rst:19
+msgid "1"
+msgstr "1"
+
+#: ../../source/reference/error-codes.rst:20
+msgid "General error (most failures)"
+msgstr "Општа грешка"
+
+#: ../../source/reference/error-codes.rst:21
+msgid "2"
+msgstr "2"
+
+#: ../../source/reference/error-codes.rst:22
+msgid "Health check critical error (Proxmox API unavailable)"
+msgstr ""
+
+#: ../../source/reference/error-codes.rst:23
+msgid "130"
+msgstr "10"
+
+#: ../../source/reference/error-codes.rst:24
+msgid "Interrupted (SIGINT/SIGTERM)"
+msgstr ""
+
+#: ../../source/reference/error-codes.rst:27
+msgid "Error Messages"
+msgstr "Поруке о грешкама"
+
+#: ../../source/reference/error-codes.rst:29
+msgid "Common error messages and solutions:"
+msgstr "Уобичајене поруке о грешкама и решења:"
+
+#: ../../source/reference/error-codes.rst:31
+msgid "**ERROR: Tenant 'NAME' already exists**"
+msgstr "**ERROR: клијент already exists**"
+
+#: ../../source/reference/error-codes.rst:32
+msgid ""
+"A tenant with this name already exists. Use a different name or remove "
+"the existing tenant."
+msgstr ""
+"клијент са овим именом већ постоји. Користите другачије име или уклоните "
+"постојећи клијент."
+
+#: ../../source/reference/error-codes.rst:34
+msgid "**ERROR: No available VLAN IDs in range X-Y**"
+msgstr "**ERROR: No available VLANs**"
+
+#: ../../source/reference/error-codes.rst:35
+msgid "VLAN pool exhausted. Increase VLAN range or remove unused tenants."
+msgstr ""
+"VLAN pool исцрпљен. Повећајте опсег pool-а или уклоните некоришћене "
+"клијенте."
+
+#: ../../source/reference/error-codes.rst:37
+msgid "**ERROR: Failed to create resource pool**"
+msgstr ""
+
+#: ../../source/reference/error-codes.rst:38
+msgid "Proxmox API error. Check Proxmox logs and permissions."
+msgstr "Proxmox API грешка. Проверите Proxmox логове и дозволе."
+
+#: ../../source/reference/error-codes.rst:40
+msgid "**ERROR: This script must be run as root**"
+msgstr "Команда мора бити покренута као root."
+
+#: ../../source/reference/error-codes.rst:41
+msgid "Command must be run as root."
+msgstr "Команда мора бити покренута као root."
+
+#: ../../source/reference/error-codes.rst:43
+msgid "See :doc:`../admin-guide/operations` for more details."
+msgstr "Погледајте :doc:`../admin-guide/troubleshooting` за више детаља."
+
+# Proxmox Multi-Tenant Management System - Serbian Translation
+# Copyright (C) 2026, Aleksa Savić
+# This file is distributed under the same license as the Proxmox
+# Multi-Tenant Management System package.
+# Aleksa Savić <savicaleksa.kg@gmail.com>, 2026.
+#~ msgid "PO-Revision-Date: 2026-02-01 12:00+0100\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Proxmox Multi-Tenant Management System 1.0.2\n"
+#~ "Report-Msgid-Bugs-To: savicaleksa.kg@gmail.com\n"
+#~ "POT-Creation-Date: 2026-02-01 10:36+0100\n"
+#~ "Last-Translator: Aleksa Savić\n"
+#~ "Language: sr\n"
+#~ "Language-Team: Serbian <savicaleksa.kg@gmail.com>\n"
+#~ "Plural-Forms: nplurals=3; plural=(n%10==1 &&"
+#~ " n%100!=11 ? 0 : n%10>=2 && "
+#~ "n%10<=4 && (n%100<10 || n%100>=20) ? "
+#~ "1 : 2);\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.17.0\n"
+
+#~ msgid "Standard exit codes used by all commands:"
+#~ msgstr "Стандардни излазни кодови које користе све команде:"
+
+#~ msgid "Invalid arguments or usage"
+#~ msgstr "Неисправни аргументи или употреба"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "Resource not found"
+#~ msgstr "Ресурс није пронађен"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "Permission denied"
+#~ msgstr "Дозвола одбијена"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "Resource already exists"
+#~ msgstr "Ресурс већ постоји"
+
+#~ msgid "Proxmox API error"
+#~ msgstr "Proxmox API грешка"
+
+#~ msgid "11"
+#~ msgstr "11"
+
+#~ msgid "Network configuration error"
+#~ msgstr "Грешка у конфигурацији мреже"
+
+#~ msgid "12"
+#~ msgstr "12"
+
+#~ msgid "VyOS configuration error"
+#~ msgstr "VyOS грешка конфигурације"
+
+#~ msgid "**ERROR: Pool creation failed**"
+#~ msgstr "**ERROR: Pool creation failed**"
+
+#~ msgid "**ERROR: Permission denied**"
+#~ msgstr "**ERROR: Permission denied**"
+

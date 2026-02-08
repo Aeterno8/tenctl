@@ -1,0 +1,512 @@
+/* Custom CSS for Proxmox Multi-Tenant Documentation */
+
+/* Improved code blocks */
+.highlight {
+    background-color: #f8f8f8;
+    border: 1px solid #e1e4e5;
+    border-radius: 4px;
+    margin-bottom: 24px;
+}
+
+.highlight pre {
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: auto;
+}
+
+/* Better table styling */
+table.docutils {
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+table.docutils thead th {
+    background-color: #2980b9;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #2980b9;
+}
+
+table.docutils tbody tr {
+    border-bottom: 1px solid #e1e4e5;
+}
+
+table.docutils tbody tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+table.docutils tbody td {
+    padding: 12px;
+    vertical-align: top;
+}
+
+/* Improved admonitions */
+.admonition {
+    margin: 24px 0;
+    padding: 12px;
+    border-left: 4px solid #2980b9;
+    background-color: #e7f2fa;
+    border-radius: 4px;
+}
+
+.admonition.note {
+    border-left-color: #2980b9;
+    background-color: #e7f2fa;
+}
+
+.admonition.warning {
+    border-left-color: #e67e22;
+    background-color: #fef5e7;
+}
+
+.admonition.danger {
+    border-left-color: #e74c3c;
+    background-color: #fadbd8;
+}
+
+.admonition-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* Code inline */
+code.literal {
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 90%;
+    color: #c7254e;
+}
+
+/* Better spacing for sections */
+.section {
+    margin-bottom: 32px;
+}
+
+/* Improved lists */
+ul, ol {
+    margin-bottom: 16px;
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+/* Definition lists */
+dl dt {
+    font-weight: bold;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+dl dd {
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+/* Better heading spacing */
+h1 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e1e4e5;
+}
+
+h2 {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e1e4e5;
+}
+
+h3 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+/* Grid cards (sphinx-design) */
+.sd-card {
+    border: 1px solid #e1e4e5;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease;
+}
+
+.sd-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sd-card-header {
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e1e4e5;
+    padding: 12px 16px;
+    font-weight: bold;
+}
+
+.sd-card-body {
+    padding: 16px;
+}
+
+/* Mermaid diagrams */
+.mermaid {
+    text-align: center;
+    margin: 24px 0;
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #e1e4e5;
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Ensure default Mermaid buttons are visible */
+.mermaid button {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure Mermaid SVG is visible and responsive */
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+    background-color: #ffffff !important;
+}
+
+/* CRITICAL: Force dark text in ALL Mermaid diagram text elements */
+.mermaid text,
+.mermaid tspan,
+.mermaid .messageText,
+.mermaid .labelText,
+.mermaid .loopText,
+.mermaid .noteText,
+.mermaid .actor,
+.mermaid .activation,
+.mermaid .nodeLabel,
+.mermaid .edgeLabel,
+.mermaid .cluster-label,
+.mermaid foreignObject,
+.mermaid foreignObject div,
+.mermaid foreignObject p,
+.mermaid foreignObject span,
+.mermaid g.label text,
+.mermaid g.edgeLabel text,
+.mermaid g.node text {
+    fill: #000000 !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Ensure boxes and actors have proper fill and borders */
+.mermaid rect.actor,
+.mermaid rect.labelBox,
+.mermaid g.actor rect {
+    fill: #e3f2fd !important;
+    stroke: #1976d2 !important;
+    stroke-width: 2px !important;
+}
+
+/* ALL sequence diagram lines - make them DARK and VISIBLE */
+.mermaid line,
+.mermaid path,
+.mermaid polyline,
+.mermaid g.activation rect,
+.mermaid marker path {
+    stroke: #1976d2 !important;
+    stroke-width: 2.5px !important;
+}
+
+/* Arrow markers */
+.mermaid marker {
+    fill: #1976d2 !important;
+}
+
+/* Flow diagram nodes - ALL types */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon,
+.mermaid .node path,
+.mermaid g.node rect,
+.mermaid g.node circle,
+.mermaid g.node polygon {
+    fill: #e3f2fd !important;
+    stroke: #1976d2 !important;
+    stroke-width: 2.5px !important;
+}
+
+/* Edge labels background - CRITICAL: Force white background */
+.mermaid .edgeLabel,
+.mermaid .edgeLabel rect,
+.mermaid .edgeLabel span,
+.mermaid g.edgeLabel,
+.mermaid g.edgeLabel rect,
+.mermaid g.edgeLabel span,
+.mermaid .label-container,
+.mermaid span.edgeLabel {
+    fill: #ffffff !important;
+    background-color: #ffffff !important;
+    stroke: #1976d2 !important;
+    stroke-width: 1.5px !important;
+    padding: 5px !important;
+}
+
+/* Edge label text - CRITICAL: Force black text */
+.mermaid .edgeLabel text,
+.mermaid .edgeLabel tspan,
+.mermaid g.edgeLabel text,
+.mermaid g.edgeLabel tspan,
+.mermaid span.edgeLabel {
+    fill: #000000 !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    background-color: transparent !important;
+}
+
+/* Cluster/subgraph styling - more visible */
+.mermaid .cluster rect,
+.mermaid g.cluster rect,
+.mermaid .cluster polygon {
+    fill: #f5f5f5 !important;
+    stroke: #1976d2 !important;
+    stroke-width: 2.5px !important;
+    stroke-dasharray: 5, 5 !important;
+}
+
+/* Cluster labels */
+.mermaid .cluster-label,
+.mermaid g.cluster text {
+    fill: #000000 !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+}
+
+/* Note boxes */
+.mermaid .note rect,
+.mermaid g.note rect {
+    fill: #fff9c4 !important;
+    stroke: #f57c00 !important;
+    stroke-width: 2px !important;
+}
+
+.mermaid .note text,
+.mermaid g.note text {
+    fill: #000000 !important;
+    font-weight: 600 !important;
+}
+
+/* State diagram specific */
+.mermaid g.stateGroup rect {
+    fill: #e3f2fd !important;
+    stroke: #1976d2 !important;
+    stroke-width: 2px !important;
+}
+
+/* Ensure all paths (connections) are visible */
+.mermaid path.relation,
+.mermaid path.transition,
+.mermaid path.edge,
+.mermaid g.edge path {
+    stroke: #1976d2 !important;
+    stroke-width: 2.5px !important;
+    fill: none !important;
+}
+
+/* Fix for flowchart diamonds and special shapes */
+.mermaid .node polygon,
+.mermaid g.node polygon {
+    fill: #e3f2fd !important;
+    stroke: #1976d2 !important;
+    stroke-width: 2.5px !important;
+}
+
+/* Ensure label backgrounds are opaque and WHITE */
+.mermaid .label,
+.mermaid .edgeLabel,
+.mermaid foreignObject,
+.mermaid foreignObject > div,
+.mermaid foreignObject > div > span,
+.mermaid .labelBkg,
+.mermaid .edgePath .path,
+.mermaid .label-container {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+}
+
+/* CRITICAL: Override ANY and ALL dark backgrounds on labels */
+.mermaid foreignObject div,
+.mermaid foreignObject span,
+.mermaid foreignObject p,
+.mermaid .edgeLabel span,
+.mermaid .nodeLabel span,
+.mermaid foreignObject div[style],
+.mermaid foreignObject span[style],
+.mermaid span[style*="background"],
+.mermaid div[style*="background"],
+.mermaid .edgeLabel[style*="background"],
+.mermaid foreignObject > div,
+.mermaid foreignObject > div > span,
+.mermaid g foreignObject div,
+.mermaid g foreignObject span {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    background-image: none !important;
+}
+
+/* Force override ALL span backgrounds in Mermaid */
+.mermaid span[class*="edge"],
+.mermaid span[class*="label"] {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+}
+
+/* Critical: Override any inline styles that might make text invisible */
+.mermaid svg * {
+    stroke-opacity: 1 !important;
+    fill-opacity: 1 !important;
+}
+
+/* Function documentation */
+dl.function {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f8f8f8;
+    border-left: 4px solid #2980b9;
+    border-radius: 4px;
+}
+
+dl.function dt {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+dl.function dd {
+    margin-left: 0;
+}
+
+/* Responsive images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Print styles */
+@media print {
+    .rst-content .sidebar {
+        display: none;
+    }
+
+    .wy-nav-side {
+        display: none;
+    }
+
+    .rst-content {
+        width: 100%;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+}
+
+/* Dark theme support (optional) */
+@media (prefers-color-scheme: dark) {
+    /* Add dark theme overrides here if needed */
+}
+
+/* Improve readability */
+.rst-content {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Better link styling */
+a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #3498db;
+    text-decoration: underline;
+}
+
+/* Command-line examples */
+.highlight-bash .highlight {
+    background-color: #2c3e50;
+}
+
+.highlight-bash .highlight pre {
+    color: #ecf0f1;
+}
+
+/* Version badge */
+.version {
+    font-weight: bold;
+    color: #27ae60;
+}
+
+/* Improve TOC styling */
+.wy-menu-vertical li.current {
+    background-color: #e7f2fa;
+}
+
+.wy-menu-vertical li.current > a {
+    border-right: 4px solid #2980b9;
+}
+
+/* Language switcher styling */
+.language-switcher {
+    padding: 12px;
+    margin-bottom: 16px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e1e4e5;
+    border-radius: 4px;
+}
+
+.language-switcher .caption {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.language-switcher ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.language-switcher li {
+    display: inline-block;
+    margin-right: 12px;
+}
+
+.language-switcher li.active strong {
+    color: #2980b9;
+    font-weight: bold;
+}
+
+.language-switcher a {
+    color: #404040;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.language-switcher a:hover {
+    background-color: #e7f2fa;
+    color: #2980b9;
+    text-decoration: none;
+}

@@ -1,0 +1,298 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $0 --file BACKUP_FILE [OPTIONS]
+
+Restore tenant configuration from backup archive.
+
+IMPORTANT: This restores tenant CONFIG only, not VM disk images.
+VMs must be restored separately using Proxmox Backup Server or vzdump.
+
+Required:
+  --file FILE                 Path to backup archive (.tar.gz)
+
+Optional:
+  --new-name NAME             Restore with different tenant name
+  -f, --force                 Skip confirmation prompt
+  -h, --help                  Show this help
+
+Examples:
+  $0 --file /var/backups/tenctl/firma_a_20240115_123456.tar.gz
+  $0 --file backup.tar.gz --new-name firma_a_copy
+
+Restore Process:
+  1. Extract backup archive
+  2. Verify manifest and checksums
+  3. Create resource pool
+  4. Create user and group
+  5. Create VNet and subnet
+  6. Restore tenant configuration
+  7. Set ACL permissions
+
+NOT Restored (use vzdump restore):
+  - VM disk images
+  - VM snapshots
+  - Container filesystems
+
+EOF
+    exit 1
+}
+
+BACKUP_FILE=""
+NEW_TENANT_NAME=""
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --file)
+            BACKUP_FILE="$2"
+            shift 2
+            ;;
+        --new-name)
+            NEW_TENANT_NAME="$2"
+            shift 2
+            ;;
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+if [ -z "$BACKUP_FILE" ]; then
+    echo "ERROR: Backup file is required"
+    usage
+fi
+
+ptm_check_root
+ptm_check_requirements || exit 1
+
+if [ ! -f "$BACKUP_FILE" ]; then
+    ptm_log ERROR "Backup file not found: $BACKUP_FILE"
+    exit 1
+fi
+
+TEMP_DIR=$(mktemp -d)
+trap "rm -rf '$TEMP_DIR'" EXIT
+
+ptm_log INFO "Extracting backup archive..."
+if ! tar -xzf "$BACKUP_FILE" -C "$TEMP_DIR"; then
+    ptm_log ERROR "Failed to extract backup archive"
+    exit 1
+fi
+
+MANIFEST=$(find "$TEMP_DIR" -name "manifest.json" | head -n1)
+
+if [ -z "$MANIFEST" ] || [ ! -f "$MANIFEST" ]; then
+    ptm_log ERROR "Backup manifest not found in archive"
+    exit 1
+fi
+
+BACKUP_DIR=$(dirname "$MANIFEST")
+
+ptm_log INFO "Verifying backup integrity..."
+if [ -f "${BACKUP_DIR}/checksums.txt" ]; then
+    (cd "$BACKUP_DIR" && sha256sum -c checksums.txt --quiet) || {
+        ptm_log ERROR "Checksum verification failed"
+        exit 1
+    }
+    ptm_log INFO "✓ Backup integrity verified"
+fi
+
+ORIGINAL_NAME=$(jq -r '.tenant_name' "$MANIFEST")
+VLAN_ID=$(jq -r '.vlan_id // null' "$MANIFEST")
+SUBNET=$(jq -r '.subnet // null' "$MANIFEST")
+CPU_LIMIT=$(jq -r '.cpu_limit' "$MANIFEST")
+RAM_LIMIT=$(jq -r '.ram_limit' "$MANIFEST")
+STORAGE_LIMIT=$(jq -r '.storage_limit' "$MANIFEST")
+VM_COUNT=$(jq -r '.vm_count' "$MANIFEST")
+BACKUP_TIMESTAMP=$(jq -r '.backup_timestamp' "$MANIFEST")
+
+if [ -n "$NEW_TENANT_NAME" ]; then
+    TENANT_NAME="$NEW_TENANT_NAME"
+    ptm_validate_tenant_name "$TENANT_NAME" || exit 1
+else
+    TENANT_NAME="$ORIGINAL_NAME"
+fi
+
+if ptm_tenant_exists "$TENANT_NAME"; then
+    ptm_log ERROR "Tenant '$TENANT_NAME' already exists"
+    ptm_log INFO "Use --new-name to restore with different name"
+    exit 1
+fi
+
+ptm_log INFO "Tenant Restore Plan"
+ptm_log INFO "Original tenant: $ORIGINAL_NAME"
+ptm_log INFO "Target tenant: $TENANT_NAME"
+ptm_log INFO "Backup date: $BACKUP_TIMESTAMP"
+ptm_log INFO "Resources to restore:"
+ptm_log INFO "  CPU limit: $CPU_LIMIT cores"
+ptm_log INFO "  RAM limit: $RAM_LIMIT MB"
+ptm_log INFO "  Storage limit: $STORAGE_LIMIT GB"
+ptm_log INFO "  VMs in backup: $VM_COUNT"
+ptm_log INFO "Actions:"
+ptm_log INFO "  1. Create resource pool"
+ptm_log INFO "  2. Create user and group"
+ptm_log INFO "  3. Create VNet and subnet"
+ptm_log INFO "  4. Restore tenant configuration"
+ptm_log INFO "  5. Set ACL permissions"
+ptm_log WARN "VM disk images must be restored separately"
+
+if [ "$FORCE" = false ]; then
+    read -p "Continue with restore? (yes/no): " confirm
+    if [ "$confirm" != "yes" ]; then
+        ptm_log INFO "Restore cancelled"
+        exit 0
+    fi
+fi
+
+ptm_log INFO "Starting tenant restore..."
+
+USERNAME="${TENANT_NAME}_admin"
+GROUP_NAME="group_${TENANT_NAME}"
+POOL_ID="tenant_${TENANT_NAME}"
+
+ptm_log INFO "Creating resource pool: $POOL_ID"
+if create_resource_pool "$POOL_ID" "$TENANT_NAME"; then
+    ptm_log INFO "✓ Resource pool created"
+else
+    ptm_log ERROR "Failed to create resource pool"
+    exit 1
+fi
+
+ptm_set_pool_limits "$POOL_ID" "$CPU_LIMIT" "$RAM_LIMIT" "$STORAGE_LIMIT"
+
+ptm_log INFO "Creating group: $GROUP_NAME"
+if pvesh create /access/groups --groupid "$GROUP_NAME" --comment "Group for tenant $TENANT_NAME" 2>/dev/null; then
+    ptm_log INFO "✓ Group created"
+else
+    ptm_log WARN "Group creation failed or already exists"
+fi
+
+ptm_log INFO "Creating user: ${USERNAME}@pve"
+PASSWORD=$(ptm_generate_password)
+
+if ptm_create_user "$USERNAME" "$PASSWORD" "$GROUP_NAME" "${USERNAME}@${TENANT_NAME}.local"; then
+    ptm_log INFO "✓ User created"
+
+    CRED_DIR="/root/tenctl-credentials"
+    mkdir -p "$CRED_DIR"
+    chmod 700 "$CRED_DIR"
+
+    CRED_FILE="${CRED_DIR}/tenant_${TENANT_NAME}_restored_$(date +%Y%m%d_%H%M%S).json"
+
+    cat > "$CRED_FILE" <<EOF
+{
+  "tenant_name": "$TENANT_NAME",
+  "username": "${USERNAME}@pve",
+  "password": "$PASSWORD",
+  "group": "$GROUP_NAME",
+  "pool": "$POOL_ID",
+  "restored_from": "$ORIGINAL_NAME",
+  "restore_date": "$(date -Iseconds)"
+}
+EOF
+    chmod 600 "$CRED_FILE"
+    ptm_log INFO "✓ Credentials saved to $CRED_FILE"
+else
+    ptm_log ERROR "Failed to create user"
+    exit 1
+fi
+
+if [ "$VLAN_ID" != "null" ] && [ -n "$VLAN_ID" ]; then
+    VNET_NAME="vn${VLAN_ID}"
+
+    ptm_log INFO "Creating VNet: $VNET_NAME with VLAN $VLAN_ID"
+
+    if pvesh create /cluster/sdn/vnets \
+        --vnet "$VNET_NAME" \
+        --zone "$SDN_ZONE_NAME" \
+        --tag "$VLAN_ID" \
+        --alias "Network for ${TENANT_NAME}" 2>/dev/null; then
+        ptm_log INFO "✓ VNet created"
+
+        if [ "$SUBNET" != "null" ] && [ -n "$SUBNET" ]; then
+            NETWORK_PREFIX=$(echo "$SUBNET" | cut -d'.' -f1-3)
+            GATEWAY="${NETWORK_PREFIX}.1"
+            SUBNET_ID="${SDN_ZONE_NAME}-$(echo "$SUBNET" | tr './' '-')"
+
+            ptm_log INFO "Creating subnet: $SUBNET"
+
+            if pvesh create "/cluster/sdn/vnets/${VNET_NAME}/subnets" \
+                --subnet "$SUBNET" \
+                --type subnet \
+                --gateway "$GATEWAY" 2>/dev/null; then
+                ptm_log INFO "✓ Subnet created"
+            else
+                ptm_log WARN "Subnet creation failed"
+            fi
+        fi
+
+        pvesh set /cluster/sdn 2>/dev/null || ptm_log WARN "SDN config apply failed"
+    else
+        ptm_log WARN "VNet creation failed (may already exist or VLAN conflict)"
+    fi
+else
+    ptm_log INFO "No VNet/VLAN in backup, skipping network creation"
+fi
+
+ptm_log INFO "Setting ACL permissions..."
+for role in "PVEPoolAdmin" "PVEVMAdmin"; do
+    ptm_set_acl_permission "/pool/${POOL_ID}" "$role" "${USERNAME}@pve"
+done
+ptm_log INFO "✓ ACL permissions set"
+
+ptm_log INFO "Restoring tenant configuration..."
+
+TENANT_CONF="${TENANT_CONFIG_DIR}/${TENANT_NAME}.conf"
+
+if [ -f "${BACKUP_DIR}/tenant.conf" ]; then
+    cat "${BACKUP_DIR}/tenant.conf" | \
+        sed "s/TENANT_NAME=\".*\"/TENANT_NAME=\"${TENANT_NAME}\"/" | \
+        sed "s/TENANT_USER=\".*\"/TENANT_USER=\"${USERNAME}\"/" | \
+        sed "s/GROUP_NAME=\".*\"/GROUP_NAME=\"${GROUP_NAME}\"/" | \
+        sed "s/POOL_ID=\".*\"/POOL_ID=\"${POOL_ID}\"/" > "$TENANT_CONF"
+
+    echo "RESTORED_FROM=\"${ORIGINAL_NAME}\"" >> "$TENANT_CONF"
+    echo "RESTORE_DATE=\"$(date "+%Y-%m-%d %H:%M:%S")\"" >> "$TENANT_CONF"
+
+    chmod 640 "$TENANT_CONF"
+    ptm_log INFO "✓ Tenant configuration restored"
+else
+    ptm_log ERROR "tenant.conf not found in backup"
+    exit 1
+fi
+
+ptm_log INFO "Tenant Restore Complete!"
+ptm_log INFO "Tenant: $TENANT_NAME"
+ptm_log INFO "Restored from: $ORIGINAL_NAME ($BACKUP_TIMESTAMP)"
+ptm_log INFO "Restored Resources:"
+ptm_log INFO "  ✓ Resource pool: $POOL_ID"
+ptm_log INFO "  ✓ User: ${USERNAME}@pve"
+ptm_log INFO "  ✓ Group: $GROUP_NAME"
+if [ "$VLAN_ID" != "null" ]; then
+    ptm_log INFO "  ✓ VNet: $VNET_NAME (VLAN $VLAN_ID)"
+    [ "$SUBNET" != "null" ] && ptm_log INFO "  ✓ Subnet: $SUBNET"
+fi
+ptm_log INFO "Credentials: $CRED_FILE"
+ptm_log WARN "VM Configuration Inventory:"
+ptm_log INFO "  $VM_COUNT VM(s) were in the backup"
+ptm_log INFO "  VM disk images must be restored using:"
+ptm_log INFO "    qmrestore <vmid> <archive>"
+ptm_log INFO "  Then add VMs to pool: $POOL_ID"
+
+exit 0

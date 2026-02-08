@@ -1,0 +1,328 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $0 [OPTIONS]
+
+Initializes Proxmox cluster for multi-tenant environment.
+Creates SDN infrastructure, network bridges and zones.
+
+Optional:
+  -t, --type TYPE          SDN zone tip: vlan, vxlan, simple (default: $SDN_ZONE_TYPE)
+  -z, --zone ZONE_NAME     Ime SDN zone (default: $SDN_ZONE_NAME)
+  -b, --bridge BRIDGE      Network bridge (default: $NETWORK_BRIDGE)
+  -p, --peers PEERS        Cluster nodes za VxLAN (comma separated)
+  -f, --force              Skip confirmation
+  -h, --help               Show this help message
+
+Example:
+  $0
+  $0 --type vxlan --peers "192.168.1.101,192.168.1.102"
+  $0 --type vlan --bridge vmbr1
+
+EOF
+    exit 1
+}
+
+ZONE_TYPE=$SDN_ZONE_TYPE
+ZONE_NAME=$SDN_ZONE_NAME
+BRIDGE=$NETWORK_BRIDGE
+PEERS=""
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--type)
+            ZONE_TYPE="$2"
+            shift 2
+            ;;
+        -z|--zone)
+            ZONE_NAME="$2"
+            shift 2
+            ;;
+        -b|--bridge)
+            BRIDGE="$2"
+            shift 2
+            ;;
+        -p|--peers)
+            PEERS="$2"
+            shift 2
+            ;;
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+ptm_check_root
+ptm_check_requirements || exit 1
+
+ptm_log INFO "Tenctl Initialization"
+ptm_log INFO "SDN Zone Type: $ZONE_TYPE"
+ptm_log INFO "SDN Zone Name: $ZONE_NAME"
+ptm_log INFO "Network Bridge: $BRIDGE"
+if [ -n "$PEERS" ]; then
+    ptm_log INFO "VxLAN Peers: $PEERS"
+fi
+
+if [ "$FORCE" = false ]; then
+    echo ""
+    read -p "Continue with initialization? (yes/no): " confirm
+    if [ "$confirm" != "yes" ]; then
+        ptm_log INFO "Initialization cancelled"
+        exit 0
+    fi
+fi
+
+ptm_log INFO "Checking network bridge: $BRIDGE"
+if ! ip link show $BRIDGE &>/dev/null; then
+    ptm_log ERROR "Bridge $BRIDGE does not exist. Please create it first."
+    ptm_log INFO "Example: Create bridge in /etc/network/interfaces:"
+    cat <<EOF
+
+auto $BRIDGE
+iface $BRIDGE inet manual
+    bridge-ports none
+    bridge-stp off
+    bridge-fd 0
+    bridge-vlan-aware yes
+    bridge-vids 2-4094
+
+EOF
+    exit 1
+else
+    ptm_log INFO "Bridge $BRIDGE exists"
+
+    if [ "$ZONE_TYPE" = "vlan" ]; then
+        if ! grep -q "bridge-vlan-aware yes" /etc/network/interfaces 2>/dev/null; then
+            ptm_log WARN "Bridge $BRIDGE may not be VLAN-aware. Consider adding 'bridge-vlan-aware yes' to /etc/network/interfaces"
+        fi
+    fi
+fi
+
+if pvesh get /cluster/sdn/zones/$ZONE_NAME --output-format json &>/dev/null; then
+    ptm_log WARN "SDN Zone '$ZONE_NAME' already exists. Skipping creation."
+else
+    ptm_log INFO "Creating SDN Zone: $ZONE_NAME (type: $ZONE_TYPE)"
+
+    case $ZONE_TYPE in
+        vlan)
+            ptm_log INFO "Creating VLAN zone on bridge: $BRIDGE"
+            if ptm_run_pvesh create /cluster/sdn/zones \
+                --zone "$ZONE_NAME" \
+                --type vlan \
+                --bridge "$BRIDGE"; then
+                ptm_log INFO "VLAN zone created successfully"
+            else
+                ptm_log ERROR "Failed to create VLAN zone"
+                exit 1
+            fi
+            ;;
+
+        vxlan)
+            if [ -z "$PEERS" ]; then
+                ptm_log INFO "Auto-detecting cluster nodes for VxLAN peers..."
+
+                CURRENT_NODE=$(hostname)
+                PEERS=$(pvesh get /cluster/status --output-format json 2>/dev/null | \
+                    jq -r --arg node "$CURRENT_NODE" '.[] | select(.type=="node" and .online==1 and .name!=$node) | .ip' | \
+                    tr '\n' ',' | sed 's/,$//')
+
+                if [ -z "$PEERS" ]; then
+                    ptm_log WARN "No online cluster peers found. For single-node, consider using 'vlan' or 'simple' zone type."
+                    ptm_log INFO "You can manually specify peers with: --peers \"192.168.1.101,192.168.1.102\""
+
+                    read -p "Continue without peers (single-node VxLAN)? (yes/no): " continue_single
+                    if [ "$continue_single" != "yes" ]; then
+                        ptm_log INFO "Initialization cancelled. Switch to 'vlan' or 'simple' zone type for single-node."
+                        exit 1
+                    fi
+                    PEERS=""
+                else
+                    ptm_log INFO "Detected peers: $PEERS"
+                fi
+            fi
+
+            if [ -n "$PEERS" ]; then
+                ptm_log INFO "Creating VxLAN zone with peers: $PEERS"
+                if ptm_run_pvesh create /cluster/sdn/zones \
+                    --zone "$ZONE_NAME" \
+                    --type vxlan \
+                    --peers "$PEERS"; then
+                    ptm_log INFO "VxLAN zone created successfully"
+                else
+                    ptm_log ERROR "Failed to create VxLAN zone with peers"
+                    ptm_log INFO "Hint: Ensure cluster nodes are reachable and firewall allows VxLAN (UDP port $VXLAN_PORT)"
+                    exit 1
+                fi
+            else
+                ptm_log INFO "Creating VxLAN zone without peers (single-node)"
+                if ptm_run_pvesh create /cluster/sdn/zones \
+                    --zone "$ZONE_NAME" \
+                    --type vxlan; then
+                    ptm_log INFO "VxLAN zone created successfully (single-node mode)"
+                else
+                    ptm_log ERROR "Failed to create VxLAN zone"
+                    exit 1
+                fi
+            fi
+            ;;
+
+        simple)
+            ptm_log INFO "Creating Simple zone on bridge: $BRIDGE"
+            if ptm_run_pvesh create /cluster/sdn/zones \
+                --zone "$ZONE_NAME" \
+                --type simple \
+                --bridge "$BRIDGE"; then
+                ptm_log INFO "Simple zone created successfully"
+            else
+                ptm_log ERROR "Failed to create Simple zone"
+                exit 1
+            fi
+            ;;
+
+        *)
+            ptm_log ERROR "Unknown zone type: $ZONE_TYPE. Use vlan, vxlan, or simple."
+            exit 1
+            ;;
+    esac
+fi
+
+ptm_log INFO "Applying SDN configuration..."
+if ptm_run_pvesh set /cluster/sdn; then
+    ptm_log INFO "SDN configuration applied successfully"
+else
+    ptm_log ERROR "Failed to apply SDN configuration"
+    ptm_log INFO "Hint: Check /var/ptm_log/pve/tasks/ for detailed error messages"
+    exit 1
+fi
+
+ptm_log INFO "Creating tenant configuration directory: $TENANT_CONFIG_DIR"
+mkdir -p "$TENANT_CONFIG_DIR"
+
+ptm_log INFO "Creating ptm_log directory: $LOG_DIR"
+mkdir -p "$LOG_DIR"
+
+PROXMOX_VERSION=$(pveversion | grep -oP 'pve-manager/\K[0-9.]+')
+ptm_log INFO "Proxmox VE version: $PROXMOX_VERSION"
+
+MAJOR_VERSION=$(echo $PROXMOX_VERSION | cut -d. -f1)
+if [ "$MAJOR_VERSION" -ge 9 ]; then
+    ptm_log INFO "Resource pool limits supported (Proxmox VE 9.0+)"
+else
+    ptm_log WARN "Proxmox VE version < 9.0 detected. Resource pool limits may not be fully supported."
+fi
+
+ptm_log INFO "Current network configuration:"
+echo ""
+echo "Bridges:"
+ip -br link show type bridge
+echo ""
+echo "SDN Zones:"
+pvesh get /cluster/sdn/zones --output-format json-pretty 2>/dev/null || echo "No SDN zones configured"
+echo ""
+
+PROBE_VNET="probevn"  # Max 8 chars for vnet ID
+ptm_log INFO "Testing VNet creation in zone $ZONE_NAME..."
+
+if ptm_run_pvesh create /cluster/sdn/vnets \
+    --vnet "$PROBE_VNET" \
+    --zone "$ZONE_NAME" \
+    --tag "999" >/dev/null 2>&1; then
+    ptm_log INFO "Test VNet created successfully"
+
+    ptm_run_pvesh delete /cluster/sdn/vnets/$PROBE_VNET >/dev/null 2>&1
+    ptm_run_pvesh set /cluster/sdn >/dev/null 2>&1
+    ptm_log INFO "Test VNet deleted"
+else
+    ptm_log WARN "Test VNet creation failed (non-critical). Zone is configured, VNets will be created during tenant provisioning."
+fi
+
+ptm_log INFO "Checking Proxmox datacenter firewall..."
+FIREWALL_ENABLED=$(pvesh get /cluster/firewall/options --output-format json 2>/dev/null | grep -oP '"enable":\K\d+' || echo "0")
+
+if [ "$FIREWALL_ENABLED" = "1" ]; then
+    ptm_log INFO "Datacenter firewall is enabled"
+    ptm_log WARN "Consider configuring firewall rules for tenant isolation"
+else
+    ptm_log INFO "Datacenter firewall is disabled"
+fi
+
+ptm_log INFO "Creating helper scripts..."
+
+cat > "${SCRIPT_DIR}/list-tenants.sh" <<'EOF'
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"${SCRIPT_DIR}/tenant-list.sh" "$@"
+EOF
+chmod +x "${SCRIPT_DIR}/list-tenants.sh"
+
+cat > "${SCRIPT_DIR}/add-tenant.sh" <<'EOF'
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"${SCRIPT_DIR}/tenant-add.sh" "$@"
+EOF
+chmod +x "${SCRIPT_DIR}/add-tenant.sh"
+
+cat > "${SCRIPT_DIR}/remove-tenant.sh" <<'EOF'
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"${SCRIPT_DIR}/tenant-remove.sh" "$@"
+EOF
+chmod +x "${SCRIPT_DIR}/remove-tenant.sh"
+
+ptm_log INFO "Helper scripts created in ${SCRIPT_DIR}/"
+
+if ptm_check_vyos_configured 2>/dev/null; then
+    ptm_log INFO "VyOS router detected, initializing..."
+    if ptm_initialize_vyos; then
+        ptm_log INFO "VyOS router initialized successfully"
+    else
+        ptm_log WARN "VyOS initialization failed - you may need to configure manually"
+    fi
+else
+    ptm_log INFO "VyOS not configured - L3 routing will be handled by Proxmox SDN"
+    ptm_log INFO "To enable VyOS integration:"
+    ptm_log INFO "  1. Edit config/tenant.conf and set VYOS_ENABLED=true"
+    ptm_log INFO "  2. Configure VYOS_NODE, VYOS_VMID, and network settings"
+    ptm_log INFO "  3. Re-run this initialization script"
+fi
+
+ptm_log INFO "Initialization Complete!"
+ptm_log INFO "SDN Configuration:"
+ptm_log INFO "  Zone: $ZONE_NAME (type: $ZONE_TYPE)"
+ptm_log INFO "  Bridge: $BRIDGE"
+ptm_log INFO "Tenant Configuration:"
+ptm_log INFO "  Config directory: $TENANT_CONFIG_DIR"
+ptm_log INFO "  Log directory: $LOG_DIR"
+ptm_log INFO "  VLAN range: $VLAN_START - $VLAN_END"
+ptm_log INFO "  Subnet base: $BASE_SUBNET.0.0/16"
+if ptm_check_vyos_configured 2>/dev/null; then
+    ptm_log INFO "VyOS Router:"
+    ptm_log INFO "  Node: $VYOS_NODE"
+    ptm_log INFO "  VM ID: $VYOS_VMID"
+    ptm_log INFO "  Status: Enabled"
+fi
+ptm_log INFO "Next Steps:"
+ptm_log INFO "  1. Add your first tenant:"
+ptm_log INFO "     ${SCRIPT_DIR}/tenant-add.sh -n firma_a -e admin@firma-a.com"
+ptm_log INFO "  2. List all tenants:"
+ptm_log INFO "     ${SCRIPT_DIR}/tenant-list.sh"
+ptm_log INFO "  3. View detailed tenant info:"
+ptm_log INFO "     ${SCRIPT_DIR}/tenant-list.sh -n firma_a -d"
+
+exit 0

@@ -1,0 +1,576 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+if [ -f "/usr/local/share/tenctl/lib/ptm-loader.sh" ]; then
+    LIB_DIR="/usr/local/share/tenctl/lib"
+    CONFIG_FILE="/usr/local/share/tenctl/config/tenant.conf"
+elif [ -f "${SCRIPT_DIR}/lib/ptm-loader.sh" ]; then
+    LIB_DIR="${SCRIPT_DIR}/lib"
+    CONFIG_FILE="${LIB_DIR}/../config/tenant.conf"
+else
+    echo "ERROR: Cannot find ptm-loader.sh" >&2
+    exit 1
+fi
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "ERROR: Config file not found: $CONFIG_FILE" >&2
+    exit 1
+fi
+source "$CONFIG_FILE"
+
+source "${LIB_DIR}/ptm-loader.sh"
+
+ptm_load_tenant_management
+
+
+if [ $# -gt 0 ] && [ "$1" = "help" ]; then
+    shift
+    exec "$0" --help "$@"
+fi
+
+ptm_parse_verbosity_flags "$@"
+
+declare -a CREATED_RESOURCES=()
+
+cleanup_on_interrupt() {
+    ptm_log ERROR "Script interrupted, initiating rollback..."
+    rollback_tenant_creation "${TENANT_NAME:-unknown}"
+    exit 130
+}
+
+trap cleanup_on_interrupt SIGINT SIGTERM
+
+rollback_tenant_creation() {
+    local tenant_name=$1
+    ptm_log WARN "Rolling back tenant creation for: $tenant_name"
+
+    local rollback_failed=()
+
+    for ((i=${#CREATED_RESOURCES[@]}-1; i>=0; i--)); do
+        local resource="${CREATED_RESOURCES[$i]}"
+        ptm_log INFO "Rolling back: $resource"
+
+        local success=true
+
+        case "$resource" in
+            pool:*)
+                local pool_id="${resource#pool:}"
+                if ! pvesh delete "/pools/${pool_id}" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete pool during rollback: $pool_id"
+                    rollback_failed+=("pool:$pool_id")
+                    success=false
+                fi
+                ;;
+            user:*)
+                local user_id="${resource#user:}"
+                if ! pvesh delete "/access/users/${user_id}" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete user during rollback: $user_id"
+                    rollback_failed+=("user:$user_id")
+                    success=false
+                fi
+                ;;
+            group:*)
+                local group_name="${resource#group:}"
+                if ! pvesh delete "/access/groups/${group_name}" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete group during rollback: $group_name"
+                    rollback_failed+=("group:$group_name")
+                    success=false
+                fi
+                ;;
+            subnet:*)
+                local vnet_name=$(echo "$resource" | cut -d':' -f2)
+                local subnet=$(echo "$resource" | cut -d':' -f3)
+                local subnet_id="${SDN_ZONE_NAME}-$(echo "$subnet" | tr './' '-')"
+                if ! pvesh delete "/cluster/sdn/vnets/${vnet_name}/subnets/${subnet_id}" 2>/dev/null; then
+                    ptm_log WARN "Failed to delete subnet during rollback: $subnet_id (may not exist)"
+                else
+                    ptm_log INFO "Deleted subnet during rollback: $subnet_id"
+                    if ! pvesh set /cluster/sdn 2>/dev/null; then
+                        ptm_log WARN "Failed to apply SDN config after subnet deletion in rollback"
+                    fi
+                fi
+                ;;
+            vnet:*)
+                local vnet_name="${resource#vnet:}"
+                if ! pvesh delete "/cluster/sdn/vnets/${vnet_name}" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete VNet during rollback: $vnet_name"
+                    rollback_failed+=("vnet:$vnet_name")
+                    success=false
+                else
+                    pvesh set /cluster/sdn 2>/dev/null || ptm_log WARN "Failed to apply SDN config after VNet deletion"
+                fi
+                ;;
+            config:*)
+                local config_file="${resource#config:}"
+                if ! rm -f "$config_file" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete config during rollback: $config_file"
+                    rollback_failed+=("config:$config_file")
+                    success=false
+                fi
+                ;;
+            credentials:*)
+                local cred_file="${resource#credentials:}"
+                if ! rm -f "$cred_file" 2>/dev/null; then
+                    ptm_log ERROR "Failed to delete credentials during rollback: $cred_file"
+                    rollback_failed+=("credentials:$cred_file")
+                    success=false
+                fi
+                ;;
+            vyos:*)
+                local vyos_info="${resource#vyos:}"
+                local tenant_name="${vyos_info%%:*}"
+                local vlan_id="${vyos_info##*:}"
+                if ptm_check_vyos_configured 2>/dev/null; then
+                    if ! ptm_remove_vyos_tenant "$tenant_name" "$vlan_id" 2>/dev/null; then
+                        ptm_log WARN "Failed to remove VyOS config during rollback (non-fatal)"
+                    fi
+                fi
+                ;;
+        esac
+
+        if [ "$success" = true ]; then
+            ptm_log INFO "Successfully rolled back: $resource"
+        fi
+    done
+
+    CREATED_RESOURCES=()
+
+    if [ ${#rollback_failed[@]} -gt 0 ]; then
+        ptm_log ERROR "=========================================="
+        ptm_log ERROR "Rollback INCOMPLETE - Manual cleanup required"
+        ptm_log ERROR "=========================================="
+        ptm_log ERROR "The following resources could not be automatically removed:"
+        for resource in "${rollback_failed[@]}"; do
+            ptm_log ERROR "  - $resource"
+        done
+        ptm_log ERROR ""
+        ptm_log ERROR "Please manually remove these resources using Proxmox web UI or pvesh commands"
+    else
+        ptm_log WARN "Rollback complete - All resources successfully removed"
+    fi
+}
+
+usage() {
+    cat << EOF
+Usage: $0 -n TENANT_NAME [OPTIONS]
+
+Adds a new tenant to Proxmox multi-tenant environment.
+
+Required:
+  -n, --name TENANT_NAME        Tenant name (must start with letter, alphanumeric and _ allowed)
+
+Optional:
+  -c, --cpu CPU_LIMIT           CPU limit (broj cores, default: $DEFAULT_CPU_LIMIT)
+  -r, --ram RAM_LIMIT           RAM limit u MB (default: $DEFAULT_RAM_LIMIT)
+  -s, --storage STORAGE_LIMIT   Storage limit u GB (default: $DEFAULT_STORAGE_LIMIT)
+  -v, --vlan VLAN_ID            VLAN ID (default: auto-assign)
+  -i, --subnet SUBNET           IP subnet (default: auto-assign)
+  -u, --username USERNAME       Admin username (default: admin)
+  -p, --password PASSWORD       Admin password (default: auto-generate)
+  -e, --email EMAIL             Admin email
+  --dry-run                     Show what would be created without actually creating it
+  --verbose                     Increase verbosity (INFO level, use twice for DEBUG)
+  -h, --help                    Show this help message
+
+SECURITY WARNING:
+  Do NOT use the -p/--password flag in production environments!
+  Passwords passed via command-line arguments are visible in process listings
+  (ps aux, /proc, system logs) and may be logged in shell history files.
+
+  For production use:
+    - Rely on auto-generated passwords (default, recommended)
+    - Or use interactive password input (future enhancement)
+    - Retrieve credentials from secure file: /root/tenctl-credentials/
+
+Example:
+  $0 -n firma_b -c 16 -r 32768 -s 1000 -e admin@firma-b.com
+
+EOF
+    exit "${1:-0}"
+}
+
+TENANT_NAME=""
+CPU_LIMIT=$DEFAULT_CPU_LIMIT
+RAM_LIMIT=$DEFAULT_RAM_LIMIT
+STORAGE_LIMIT=$DEFAULT_STORAGE_LIMIT
+VLAN_ID=""
+SUBNET=""
+USERNAME=""
+PASSWORD=""
+EMAIL=""
+DRY_RUN=false
+VLAN_PROVIDED=false
+USERNAME_PROVIDED=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -n|--name)
+            TENANT_NAME="$2"
+            shift 2
+            ;;
+        -c|--cpu)
+            CPU_LIMIT="$2"
+            shift 2
+            ;;
+        -r|--ram)
+            RAM_LIMIT="$2"
+            shift 2
+            ;;
+        -s|--storage)
+            STORAGE_LIMIT="$2"
+            shift 2
+            ;;
+        -v|--vlan)
+            VLAN_ID="$2"
+            VLAN_PROVIDED=true
+            shift 2
+            ;;
+        -i|--subnet)
+            SUBNET="$2"
+            shift 2
+            ;;
+        -u|--username)
+            USERNAME="$2"
+            USERNAME_PROVIDED=true
+            shift 2
+            ;;
+        -p|--password)
+            PASSWORD="$2"
+            shift 2
+            ;;
+        -e|--email)
+            EMAIL="$2"
+            shift 2
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --verbose)
+            # Handled by ptm_parse_verbosity_flags
+            shift
+            ;;
+        -h|--help)
+            usage 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage 1
+            ;;
+    esac
+done
+
+if [ -z "$TENANT_NAME" ]; then
+    ptm_log ERROR "Tenant name is required"
+    usage 1
+fi
+
+ptm_check_root
+ptm_check_requirements || exit 1
+
+ptm_validate_tenant_name "$TENANT_NAME" || exit 1
+
+if ptm_tenant_exists "$TENANT_NAME"; then
+    ptm_log ERROR "Tenant '$TENANT_NAME' already exists"
+    exit 1
+fi
+
+ptm_validate_cluster_resources "$CPU_LIMIT" "$RAM_LIMIT" "$STORAGE_LIMIT" || {
+    ptm_log ERROR "Cannot create tenant: insufficient cluster resources"
+    exit 1
+}
+
+if [ "$VLAN_PROVIDED" = false ]; then
+    ptm_log INFO "VLAN will be auto-assigned atomically during VNet creation (prevents race conditions)"
+    VLAN_ID=""
+else
+    ptm_log INFO "Validating custom VLAN ID: $VLAN_ID"
+    ptm_validate_vlan_id "$VLAN_ID" || {
+        ptm_log ERROR "Invalid VLAN ID provided"
+        exit 1
+    }
+fi
+
+if [ -z "$SUBNET" ]; then
+    ptm_log INFO "Subnet will be auto-assigned atomically during subnet creation (prevents race conditions)"
+    SUBNET=""
+else
+    ptm_log INFO "Validating custom subnet: $SUBNET"
+    ptm_validate_subnet "$SUBNET" || {
+        ptm_log ERROR "Invalid subnet provided"
+        exit 1
+    }
+fi
+
+if [ "$USERNAME_PROVIDED" = false ]; then
+    USERNAME="admin_${TENANT_NAME}"
+    ptm_log INFO "Using tenant-specific username: $USERNAME"
+fi
+
+if [ -z "$PASSWORD" ]; then
+    PASSWORD=$(ptm_generate_password 16)
+    ptm_log INFO "Auto-generated password for user"
+fi
+
+ptm_validate_username "$USERNAME" || exit 1
+
+if [ -z "$EMAIL" ]; then
+    EMAIL="${USERNAME}@example.local"
+fi
+
+ptm_validate_email "$EMAIL" || exit 1
+
+POOL_ID="tenant_${TENANT_NAME}"
+GROUP_NAME="group_${TENANT_NAME}"
+USER_ID="${USERNAME}@pve"
+
+if [ "$DRY_RUN" = true ]; then
+    ptm_log INFO "DRY RUN: Tenant creation preview"
+else
+    ptm_log INFO "Creating tenant: $TENANT_NAME"
+fi
+
+ptm_log INFO "VLAN ID: ${VLAN_ID:-(auto-allocate)}"
+ptm_log INFO "Subnet: ${SUBNET:-(auto-allocate)}"
+ptm_log INFO "CPU Limit: $CPU_LIMIT cores"
+ptm_log INFO "RAM Limit: $RAM_LIMIT MB"
+ptm_log INFO "Storage Limit: $STORAGE_LIMIT GB"
+ptm_log INFO "Resource Pool: $POOL_ID"
+ptm_log INFO "User Group: $GROUP_NAME"
+ptm_log INFO "Admin User: $USER_ID"
+ptm_log INFO "Email: $EMAIL"
+
+if [ "$DRY_RUN" = true ]; then
+    DRY_RUN_VNET_NAME="vn${VLAN_ID}"
+
+    ptm_log INFO "The following resources would be created:"
+    ptm_log INFO "  1. Resource pool: $POOL_ID"
+    ptm_log INFO "  2. User group: $GROUP_NAME"
+    ptm_log INFO "  3. Admin user: $USER_ID"
+    ptm_log INFO "  4. ACL permissions for pool access"
+    if pvesh get "/cluster/sdn/zones/${SDN_ZONE_NAME}" --output-format json &>/dev/null; then
+        ptm_log INFO "  5. SDN VNet: $DRY_RUN_VNET_NAME (tag: $VLAN_ID)"
+        ptm_log INFO "  6. SDN Subnet: $SUBNET"
+    else
+        ptm_log INFO "  5. SDN VNet: skipped (SDN zone not configured)"
+    fi
+    ptm_log INFO "  7. Tenant configuration file"
+    ptm_log INFO "  8. Credentials file (secure location)"
+    ptm_log INFO "No actual resources were created (dry-run mode)"
+    exit 0
+fi
+
+ptm_log INFO "Creating resource pool: $POOL_ID"
+if pvesh create /pools --poolid "$POOL_ID" --comment "Resource pool for tenant: $TENANT_NAME" 2>/dev/null; then
+    ptm_log INFO "Resource pool created successfully"
+    CREATED_RESOURCES+=("pool:$POOL_ID")
+else
+    ptm_log ERROR "Failed to create resource pool"
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+fi
+
+ptm_set_pool_limits "$POOL_ID" "$CPU_LIMIT" "$RAM_LIMIT" "$STORAGE_LIMIT"
+
+ptm_create_user_group "$GROUP_NAME" "User group for tenant: $TENANT_NAME" || {
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+}
+CREATED_RESOURCES+=("group:$GROUP_NAME")
+
+ptm_create_user "$USERNAME" "$PASSWORD" "$GROUP_NAME" "$EMAIL" || {
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+}
+CREATED_RESOURCES+=("user:$USER_ID")
+
+ptm_log INFO "Setting ACL permissions for tenant admin"
+
+if ! pvesh set /access/acl --path "/pool/$POOL_ID" --roles "$TENANT_ADMIN_ROLE" --users "$USER_ID" 2>/dev/null; then
+    ptm_log ERROR "Failed to set pool ACL permissions"
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+fi
+
+if ! pvesh set /access/acl --path "/pool/$POOL_ID" --roles "PVEVMAdmin" --users "$USER_ID" 2>/dev/null; then
+    ptm_log ERROR "Failed to set VM admin ACL permissions"
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+fi
+
+AVAILABLE_STORAGES=$(pvesm status --output-format json 2>/dev/null | \
+    jq -r '.[] | select(.enabled == 1) | .storage' || echo "local local-lvm")
+
+ptm_log INFO "Detected available storages: $AVAILABLE_STORAGES"
+
+for storage in $AVAILABLE_STORAGES; do
+    if pvesh set /access/acl --path "/storage/$storage" --roles "PVEDatastoreUser" --users "$USER_ID" 2>&1 | ptm_log DEBUG; then
+        ptm_log INFO "Added storage permission for: $storage"
+    else
+        ptm_log WARN "Failed to add storage permission for: $storage (might not exist)"
+    fi
+done
+
+ptm_log INFO "ACL permissions set successfully"
+
+if pvesh get "/cluster/sdn/zones/${SDN_ZONE_NAME}" --output-format json &>/dev/null; then
+    if [ -z "$VLAN_ID" ]; then
+        ptm_log INFO "Auto-allocating VLAN and creating VNet atomically..."
+        result=$(ptm_allocate_and_create_vnet "$TENANT_NAME" "$SDN_ZONE_NAME") || {
+            ptm_log ERROR "Failed to allocate VLAN and create VNet"
+            rollback_tenant_creation "$TENANT_NAME"
+            exit 1
+        }
+        VLAN_ID="${result%%:*}"      # Extract VLAN_ID
+        VNET_NAME="${result##*:}"    # Extract VNET_NAME
+        CREATED_RESOURCES+=("vnet:$VNET_NAME")
+        ptm_log INFO "Auto-assigned VLAN ID: $VLAN_ID, VNet: $VNET_NAME"
+    else
+        VNET_NAME="vn${VLAN_ID}"
+        ptm_log INFO "Creating VNet with custom VLAN: $VLAN_ID (VNet: $VNET_NAME)"
+        if pvesh create /cluster/sdn/vnets \
+            --vnet "${VNET_NAME}" \
+            --zone "${SDN_ZONE_NAME}" \
+            --tag "${VLAN_ID}" \
+            --alias "Network for ${TENANT_NAME}" 2>/dev/null; then
+            CREATED_RESOURCES+=("vnet:$VNET_NAME")
+            ptm_log INFO "VNet created with custom VLAN: $VLAN_ID"
+        else
+            ptm_log ERROR "Failed to create SDN VNet with custom VLAN"
+            rollback_tenant_creation "$TENANT_NAME"
+            exit 1
+        fi
+    fi
+
+    if [ -z "$SUBNET" ]; then
+        ptm_log INFO "Auto-allocating subnet and creating atomically..."
+        SUBNET=$(ptm_allocate_and_create_subnet "$VNET_NAME") || {
+            ptm_log ERROR "Failed to allocate subnet and create"
+            rollback_tenant_creation "$TENANT_NAME"
+            exit 1
+        }
+        CREATED_RESOURCES+=("subnet:${VNET_NAME}:${SUBNET}")
+        ptm_log INFO "Auto-assigned subnet: $SUBNET (atomically allocated and created)"
+    else
+        ptm_log INFO "Creating subnet with custom CIDR: $SUBNET"
+        if pvesh create "/cluster/sdn/vnets/${VNET_NAME}/subnets" \
+            --subnet "${SUBNET}" \
+            --type subnet 2>&1; then
+            ptm_log INFO "SDN subnet created: $SUBNET"
+            CREATED_RESOURCES+=("subnet:${VNET_NAME}:${SUBNET}")
+        else
+            ptm_log ERROR "Failed to create SDN subnet with custom CIDR - this is required for tenant isolation"
+            rollback_tenant_creation "$TENANT_NAME"
+            exit 1
+        fi
+    fi
+
+    if pvesh set /cluster/sdn 2>/dev/null; then
+        ptm_log INFO "SDN configuration applied"
+    else
+        ptm_log WARN "Failed to apply SDN configuration - may need manual intervention"
+    fi
+
+    if pvesh set /access/acl --path "/sdn/zones/${SDN_ZONE_NAME}/${VNET_NAME}" --roles "PVESDNUser" --users "$USER_ID" 2>/dev/null; then
+        ptm_log INFO "Added SDN usage permission for VNet: $VNET_NAME"
+    else
+        ptm_log WARN "Failed to set SDN ACL (may not be critical)"
+    fi
+else
+    ptm_log WARN "SDN Zone '$SDN_ZONE_NAME' not found. Network configuration skipped."
+    ptm_log WARN "You will need to configure networking manually or run tenctl-init first"
+fi
+
+ptm_save_tenant_config "$TENANT_NAME" "$VLAN_ID" "$SUBNET" "$CPU_LIMIT" "$RAM_LIMIT" "$STORAGE_LIMIT" "$USERNAME" || {
+    ptm_log ERROR "Failed to save tenant configuration"
+    rollback_tenant_creation "$TENANT_NAME"
+    exit 1
+}
+CREATED_RESOURCES+=("config:${TENANT_CONFIG_DIR}/${TENANT_NAME}.conf")
+
+CREDENTIALS_DIR="/root/tenctl-credentials"
+if [ ! -d "$CREDENTIALS_DIR" ]; then
+    mkdir -p "$CREDENTIALS_DIR"
+    chmod 700 "$CREDENTIALS_DIR"
+fi
+
+CREDENTIALS_FILE="${CREDENTIALS_DIR}/tenant_${TENANT_NAME}_$(date +%Y%m%d_%H%M%S)_$$.json"
+
+(umask 077; jq -n \
+  --arg tenant "$TENANT_NAME" \
+  --arg user "$USER_ID" \
+  --arg pass "$PASSWORD" \
+  --arg email "$EMAIL" \
+  --arg vlan "$VLAN_ID" \
+  --arg subnet "$SUBNET" \
+  --argjson cpu "$CPU_LIMIT" \
+  --argjson ram "$RAM_LIMIT" \
+  --argjson storage "$STORAGE_LIMIT" \
+  --arg pool "$POOL_ID" \
+  --arg group "$GROUP_NAME" \
+  --arg vnet "$VNET_NAME" \
+  --arg created "$(date -Iseconds)" \
+  '{
+    tenant_name: $tenant,
+    username: $user,
+    password: $pass,
+    email: $email,
+    vlan_id: $vlan,
+    subnet: $subnet,
+    cpu_limit: $cpu,
+    ram_limit: $ram,
+    storage_limit: $storage,
+    pool_id: $pool,
+    group_name: $group,
+    vnet_name: $vnet,
+    created_date: $created
+  }' > "$CREDENTIALS_FILE") || {
+    ptm_log ERROR "Failed to save credentials file"
+    exit 1
+}
+
+CREATED_RESOURCES+=("credentials:${CREDENTIALS_FILE}")
+ptm_log INFO "Credentials saved: $CREDENTIALS_FILE (mode 600)"
+
+if ptm_check_vyos_configured 2>/dev/null; then
+    ptm_log INFO "Configuring VyOS router for tenant $TENANT_NAME..."
+    
+    GATEWAY_IP=$(echo "$SUBNET" | sed 's|\.0/24|.1|')
+    
+    if ptm_configure_vyos_tenant "$TENANT_NAME" "$VLAN_ID" "${SUBNET%.0/24}" "$GATEWAY_IP"; then
+        ptm_log INFO "VyOS router configured successfully"
+        CREATED_RESOURCES+=("vyos:${TENANT_NAME}:${VLAN_ID}")
+    else
+        ptm_log WARN "Failed to configure VyOS router (non-fatal, tenant created)"
+    fi
+else
+    ptm_log INFO "VyOS not enabled, skipping router configuration"
+fi
+
+ptm_log INFO "Tenant '$TENANT_NAME' created successfully!"
+ptm_log INFO "Access credentials:"
+ptm_log INFO "  Username: $USER_ID"
+ptm_log INFO "  Password: *** (see credentials file)"
+ptm_log INFO "  Email: $EMAIL"
+ptm_log INFO "Network configuration:"
+ptm_log INFO "  VLAN ID: $VLAN_ID"
+ptm_log INFO "  Subnet: $SUBNET"
+ptm_log INFO "  VNet: $VNET_NAME (if SDN enabled)"
+ptm_log INFO "Resource limits:"
+ptm_log INFO "  CPU: $CPU_LIMIT cores"
+ptm_log INFO "  RAM: $RAM_LIMIT MB"
+ptm_log INFO "  Storage: $STORAGE_LIMIT GB"
+ptm_log INFO "Resource Pool: $POOL_ID"
+ptm_log INFO "User Group: $GROUP_NAME"
+ptm_log INFO "IMPORTANT: Credentials saved securely to:"
+ptm_log INFO "  ${CREDENTIALS_FILE}"
+ptm_log INFO "  (readable only by root, mode 600)"
+
+ptm_send_tenant_welcome_email "$TENANT_NAME" "$USER_ID" "$PASSWORD" "$EMAIL" \
+    "$VLAN_ID" "$SUBNET" "$CPU_LIMIT" "$RAM_LIMIT" "$STORAGE_LIMIT" || \
+    ptm_log WARN "Failed to send welcome email to $EMAIL (non-fatal)"
+
+exit 0

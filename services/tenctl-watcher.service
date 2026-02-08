@@ -1,0 +1,27 @@
+[Unit]
+Description=Tenctl Resource Watcher
+Documentation=http://192.168.1.201:3000/Aleksa/tenctl
+After=network.target pve-cluster.service pvedaemon.service
+Wants=pve-cluster.service pvedaemon.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tenctl-watcher
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=false
+PrivateTmp=false
+ProtectSystem=false
+ProtectHome=false
+ReadWritePaths=/etc/pve /var/log/tenctl /dev/pve
+
+# Resource limits
+MemoryLimit=256M
+CPUQuota=10%
+
+[Install]
+WantedBy=multi-user.target
