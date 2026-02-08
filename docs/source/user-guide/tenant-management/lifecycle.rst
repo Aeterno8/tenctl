@@ -117,3 +117,21 @@ What Is Preserved
 ~~~~~~~~~~~~~~~~~
 
 - External backups (if created separately)
+
+Tenant Lifecycle Diagrams
+-------------------------
+
+.. mermaid::
+
+   graph LR
+     start((start)) -->|add| active[Active]
+     active -->|suspend| suspended[Suspended]
+     active -->|remove| removed[Removed]
+
+.. mermaid::
+
+   graph LR
+     suspended[Suspended] -->|resume| active[Active]
+     suspended -->|remove| removed[Removed]
+
+Modify (``tenctl-modify``) can be run while the tenant is **Active** or **Suspended**.

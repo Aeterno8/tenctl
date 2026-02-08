@@ -18,6 +18,11 @@ Multiple layers ensure complete isolation:
 **Layer 4: ACLs**
   Fine-grained access control per tenant
 
+.. mermaid::
+
+   flowchart TB
+     L1["Layer 1: Resource Pools"] --> L2["Layer 2: Network VLANs"] --> L3["Layer 3: User Groups"] --> L4["Layer 4: ACLs"]
+
 Command Structure
 -----------------
 

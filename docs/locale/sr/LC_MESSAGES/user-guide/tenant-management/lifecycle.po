@@ -254,6 +254,14 @@ msgstr "Шта се чува"
 msgid "External backups (if created separately)"
 msgstr ""
 
+#: ../../source/user-guide/tenant-management/lifecycle.rst:122
+msgid "Tenant Lifecycle Diagrams"
+msgstr "Дијаграми животног циклуса клијента"
+
+#: ../../source/user-guide/tenant-management/lifecycle.rst:132
+msgid "Modify (``tenctl-modify``) can be run while the tenant is **Active** or **Suspended**."
+msgstr "Команда ``tenctl-modify`` може да се користи када је клијент **Active** или **Suspended**."
+
 #~ msgid "``-c, --cpu`` - CPU cores"
 #~ msgstr ""
 

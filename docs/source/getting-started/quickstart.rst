@@ -63,6 +63,16 @@ The system automatically:
 5. Creates admin user: ``admin_companyA@pve`` and sets ACLs
 6. Stores configuration in pmxcfs (``/etc/pve/tenants``)
 
+.. mermaid::
+
+   flowchart TD
+     A["tenctl-add"] --> B["Create resource pool"]
+     B --> C["Create user group"]
+     C --> D["Create admin user + ACLs"]
+     D --> E["Allocate VLAN / create VNet (if SDN zone exists)"]
+     E --> F["Assign subnet (/24)"]
+     F --> G["Store config in pmxcfs"]
+
 Step 3: Verify Tenant
 ----------------------
 
