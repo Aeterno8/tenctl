@@ -20,7 +20,6 @@ build:
     post_install:
       - pip install sphinx-intl
     pre_build:
-      - cd docs && make extract-docs
       - cd docs && make gettext
       - cd docs && sphinx-intl update -p build/gettext -l sr
 

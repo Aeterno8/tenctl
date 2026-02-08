@@ -33,8 +33,6 @@ gettext:
 update-po: gettext
 	@echo "Updating Serbian translation files..."
 	@sphinx-intl update -p "$(BUILDDIR)/gettext" -l sr
-	@echo "Fixing .po file headers..."
-	@python3 $(SCRIPTSDIR)/fix-po-headers.py
 	@echo "Serbian .po files updated in $(LOCALEDIR)/sr/LC_MESSAGES/"
 
 build-sr: update-po
