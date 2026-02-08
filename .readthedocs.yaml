@@ -22,5 +22,5 @@ build:
     - pip install sphinx-intl
     # Build English version (default, in root)
     - sphinx-build -b html docs/source $READTHEDOCS_OUTPUT/html
-    # Build Serbian version (in /sr/ subdirectory)
-    - sphinx-build -b html -D language=sr docs/source $READTHEDOCS_OUTPUT/html/sr
+    # Build Serbian version (in /serbian/ subdirectory)
+    - sphinx-build -b html -D language=sr docs/source $READTHEDOCS_OUTPUT/html/serbian
