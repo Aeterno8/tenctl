@@ -11,16 +11,13 @@ build:
   apt_packages:
     - graphviz
     - plantuml
-    - texlive-xetex
-    - texlive-fonts-recommended
-    - texlive-latex-extra
-    - latexmk
-    - fonts-dejavu
-  commands:
-    # Install dependencies
-    - pip install -r docs/requirements.txt
-    - pip install sphinx-intl
-    # Build English version (default, in root)
-    - sphinx-build -b html docs/source $READTHEDOCS_OUTPUT/html
-    # Build Serbian version (in /serbian/ subdirectory)
-    - sphinx-build -b html -D language=sr docs/source $READTHEDOCS_OUTPUT/html/serbian
+
+# Build documentation with Sphinx
+sphinx:
+  configuration: docs/source/conf.py
+  fail_on_warning: false
+
+# Install Python dependencies
+python:
+  install:
+    - requirements: docs/requirements.txt
