@@ -20,7 +20,7 @@ build:
     # Install dependencies
     - pip install -r docs/requirements.txt
     - pip install sphinx-intl
-    # Build English version
-    - sphinx-build -b html docs/source $READTHEDOCS_OUTPUT/html/en
-    # Build Serbian version
+    # Build English version (default, in root)
+    - sphinx-build -b html docs/source $READTHEDOCS_OUTPUT/html
+    # Build Serbian version (in /sr/ subdirectory)
     - sphinx-build -b html -D language=sr docs/source $READTHEDOCS_OUTPUT/html/sr
